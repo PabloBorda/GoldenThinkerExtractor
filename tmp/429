@@ -1,0 +1,103 @@
+{"status":429}
+https://www.linkedin.com/sales-api/salesApiLeadSearch?q=searchQuery&query=(recentSearchParam:(id:2764498354,doLogHistory:true),filters:List((type:WITH_SHARED_EXPERIENCES,values:List((id:COMM,text:Shared%20experiences,selectionType:INCLUDED))),(type:INDUSTRY,values:List((id:96,text:IT%20Services%20and%20IT%20Consulting,selectionType:INCLUDED),(id:4,text:Software%20Development,selectionType:INCLUDED),(id:3099,text:Embedded%20Software%20Products,selectionType:INCLUDED),(id:3101,text:Desktop%20Computing%20Software%20Products,selectionType:INCLUDED),(id:3102,text:IT%20System%20Custom%20Software%20Development,selectionType:INCLUDED),(id:3100,text:Mobile%20Computing%20Software%20Products,selectionType:INCLUDED),(id:3,text:Computer%20Hardware%20Manufacturing,selectionType:INCLUDED),(id:6,text:Technology%2C%20Information%20and%20Internet,selectionType:INCLUDED),(id:5,text:Computer%20Networking%20Products,selectionType:INCLUDED))),(type:CURRENT_TITLE,values:List((id:6,text:President,selectionType:INCLUDED),(id:7,text:Vice%20President,selectionType:INCLUDED),(id:261,text:Vice%20President%20of%20Business%20Development,selectionType:INCLUDED),(id:57,text:Senior%20Vice%20President,selectionType:INCLUDED),(id:60,text:Executive%20Director,selectionType:INCLUDED),(id:5,text:Director,selectionType:INCLUDED),(id:16,text:Managing%20Director,selectionType:INCLUDED),(id:117,text:Creative%20Director,selectionType:INCLUDED),(id:119,text:Director%20of%20Business%20Development,selectionType:INCLUDED),(id:133,text:Board%20Member,selectionType:INCLUDED),(id:8,text:Chief%20Executive%20Officer,selectionType:INCLUDED),(id:153,text:Chief%20Technology%20Officer,selectionType:INCLUDED)))))&start=2475&count=25&trackingParam=(sessionId:koZpG763SD%2BGG5%2Fh0JyKkQ%3D%3D)&decorationId=com.linkedin.sales.deco.desktop.searchv2.LeadSearchResult-14
+https://www.linkedin.com/sales-api/salesApiLeadSearch?q=searchQuery&query=(recentSearchParam:(id:2764498354,doLogHistory:true),filters:List((type:WITH_SHARED_EXPERIENCES,values:List((id:COMM,text:Shared%20experiences,selectionType:INCLUDED))),(type:INDUSTRY,values:List((id:96,text:IT%20Services%20and%20IT%20Consulting,selectionType:INCLUDED),(id:4,text:Software%20Development,selectionType:INCLUDED),(id:3099,text:Embedded%20Software%20Products,selectionType:INCLUDED),(id:3101,text:Desktop%20Computing%20Software%20Products,selectionType:INCLUDED),(id:3102,text:IT%20System%20Custom%20Software%20Development,selectionType:INCLUDED),(id:3100,text:Mobile%20Computing%20Software%20Products,selectionType:INCLUDED),(id:3,text:Computer%20Hardware%20Manufacturing,selectionType:INCLUDED),(id:6,text:Technology%2C%20Information%20and%20Internet,selectionType:INCLUDED),(id:5,text:Computer%20Networking%20Products,selectionType:INCLUDED))),(type:CURRENT_TITLE,values:List((id:6,text:President,selectionType:INCLUDED),(id:7,text:Vice%20President,selectionType:INCLUDED),(id:261,text:Vice%20President%20of%20Business%20Development,selectionType:INCLUDED),(id:57,text:Senior%20Vice%20President,selectionType:INCLUDED),(id:60,text:Executive%20Director,selectionType:INCLUDED),(id:5,text:Director,selectionType:INCLUDED),(id:16,text:Managing%20Director,selectionType:INCLUDED),(id:117,text:Creative%20Director,selectionType:INCLUDED),(id:119,text:Director%20of%20Business%20Development,selectionType:INCLUDED),(id:133,text:Board%20Member,selectionType:INCLUDED),(id:8,text:Chief%20Executive%20Officer,selectionType:INCLUDED),(id:153,text:Chief%20Technology%20Officer,selectionType:INCLUDED)))))&start=2475&count=25&trackingParam=(sessionId:koZpG763SD%2BGG5%2Fh0JyKkQ%3D%3D)&decorationId=com.linkedin.sales.deco.desktop.searchv2.LeadSearchResult-14
+Request Method:
+GET
+Status Code:
+429 Too Many Requests
+Remote Address:
+13.107.42.14:443
+Referrer Policy:
+strict-origin-when-cross-origin
+Cache-Control:
+no-cache, no-store
+Content-Length:
+14
+Content-Security-Policy:
+frame-ancestors 'self'
+Content-Type:
+application/json
+Date:
+Sun, 11 Feb 2024 18:30:19 GMT
+Expires:
+Thu, 01 Jan 1970 00:00:00 GMT
+Pragma:
+no-cache
+Strict-Transport-Security:
+max-age=31536000
+X-Cache:
+CONFIG_NOCACHE
+X-Content-Type-Options:
+nosniff
+X-Frame-Options:
+sameorigin
+X-Li-Fabric:
+prod-ltx1
+X-Li-Pop:
+afd-prod-ltx1-x
+X-Li-Proto:
+http/2
+X-Li-Uuid:
+AAYRH1prVRX6O26/GYGARg==
+X-Msedge-Ref:
+Ref A: 3DF575C975F24B5EAD998F2D04AE8B15 Ref B: DB3EDGE2813 Ref C: 2024-02-11T18:30:18Z
+X-Restli-Error-Response:
+true
+X-Restli-Protocol-Version:
+2.0.0
+:authority:
+www.linkedin.com
+:method:
+GET
+:path:
+/sales-api/salesApiLeadSearch?q=searchQuery&query=(recentSearchParam:(id:2764498354,doLogHistory:true),filters:List((type:WITH_SHARED_EXPERIENCES,values:List((id:COMM,text:Shared%20experiences,selectionType:INCLUDED))),(type:INDUSTRY,values:List((id:96,text:IT%20Services%20and%20IT%20Consulting,selectionType:INCLUDED),(id:4,text:Software%20Development,selectionType:INCLUDED),(id:3099,text:Embedded%20Software%20Products,selectionType:INCLUDED),(id:3101,text:Desktop%20Computing%20Software%20Products,selectionType:INCLUDED),(id:3102,text:IT%20System%20Custom%20Software%20Development,selectionType:INCLUDED),(id:3100,text:Mobile%20Computing%20Software%20Products,selectionType:INCLUDED),(id:3,text:Computer%20Hardware%20Manufacturing,selectionType:INCLUDED),(id:6,text:Technology%2C%20Information%20and%20Internet,selectionType:INCLUDED),(id:5,text:Computer%20Networking%20Products,selectionType:INCLUDED))),(type:CURRENT_TITLE,values:List((id:6,text:President,selectionType:INCLUDED),(id:7,text:Vice%20President,selectionType:INCLUDED),(id:261,text:Vice%20President%20of%20Business%20Development,selectionType:INCLUDED),(id:57,text:Senior%20Vice%20President,selectionType:INCLUDED),(id:60,text:Executive%20Director,selectionType:INCLUDED),(id:5,text:Director,selectionType:INCLUDED),(id:16,text:Managing%20Director,selectionType:INCLUDED),(id:117,text:Creative%20Director,selectionType:INCLUDED),(id:119,text:Director%20of%20Business%20Development,selectionType:INCLUDED),(id:133,text:Board%20Member,selectionType:INCLUDED),(id:8,text:Chief%20Executive%20Officer,selectionType:INCLUDED),(id:153,text:Chief%20Technology%20Officer,selectionType:INCLUDED)))))&start=2475&count=25&trackingParam=(sessionId:koZpG763SD%2BGG5%2Fh0JyKkQ%3D%3D)&decorationId=com.linkedin.sales.deco.desktop.searchv2.LeadSearchResult-14
+:scheme:
+https
+Accept:
+*/*
+Accept-Encoding:
+gzip, deflate, br
+Accept-Language:
+en-GB,en-US;q=0.9,en;q=0.8,es;q=0.7
+Cookie:
+aam_uuid=76627576552833878672158469039891600200; bcookie="v=2&2046e68f-5369-4505-829f-628e140e3b54"; bscookie="v=1&20231211174647eae2addf-bad8-4726-8e63-8d27968c586cAQHTZEBF_hOVEAjJ6lQOkenqYQOmPGKP"; _gcl_au=1.1.1453724876.1677319702; g_state={"i_l":0}; MicrosoftApplicationsTelemetryDeviceId=de787350-d5c3-4830-95ec-45ca9a03ce3e; MicrosoftApplicationsTelemetryFirstLaunchTime=2023-12-11T17:59:00.434Z; liap=true; JSESSIONID="ajax:3940285677223439640"; timezone=America/Bogota; li_theme=light; li_theme_set=app; li_sugr=4c1b8e3c-2d9b-4fdb-9664-304821d47088; liveagent_oref=https://www.linkedin.com/campaignmanager/accounts?shouldShowNotificationPanelOnRender=true; liveagent_ptid=8ce9460a-3d1f-407c-804d-b311988e61dc; s_ips=911; _uetvid=e70370009e9611ee93c4990b6129ee96; liveagent_vc=4; li_alerts=e30=; __ssid=891b43ed-689f-42ab-92e7-50aa81e91f45; dfpfpt=74e5549a55924ff7b216c6f72b353dd2; gpv_pn=www.linkedin.com%2Fpremium%2Fwelcome-flow%2F; s_tp=911; s_tslv=1706131610492; li_a=AQJ2PTEmc2FsZXNfY2lkPTE1MzM1MDA2MDclM0ElM0E2NjE4OTMzMDf6-2B8-yCaovxc5bstR5saMNBLIQ; UserMatchHistory=AQIcXOmVGA4mnAAAAY16y5Z-zLDmPWUlZupk2RsFUlhaAiKiQpa1smHffqILiC_sQXpnWZdw8Vs5Hg; AnalyticsSyncHistory=AQIuYu_d5CTdSgAAAY16y5Z-IwsB_12is8xjOLWd-aMLcX6w2n2ygV_YReF-F0G-XoG5cbbMMTmLlZjVRJIRdg; lms_ads=AQEY-TnFmU_KNAAAAY16y5ffR78R_K2sJlnaGYJdxreUzTxtJIDul2X4-mCNC2Ym0Y1poVSGwTOqTaAHyy-ftKu-8-AMq856; lms_analytics=AQEY-TnFmU_KNAAAAY16y5ffR78R_K2sJlnaGYJdxreUzTxtJIDul2X4-mCNC2Ym0Y1poVSGwTOqTaAHyy-ftKu-8-AMq856; li_at=AQEDAQJy9kYA8eYmAAABjT1SSXkAAAGNqZMb_E4AUnVaRTnp1ujSeLb3EjKv29LgK_JGZoAwZC7TtS-U6EvKqh3zMfNOi2Bd2poAOxe6KPCjD4JUgE6UQqZxPxBNTQpiF8h1dEzJnpUcCZ1mhACV95FG; lang=v=2&lang=en-us; lidc="b=TB82:s=T:r=T:a=T:p=T:g=7683:u=336:x=1:i=1707669451:t=1707755827:v=2:sig=AQEDHL_ECxSkTMsqNteKpU8jt1lHwRIC"; AMCVS_14215E3D5995C57C0A495C55%40AdobeOrg=1; AMCV_14215E3D5995C57C0A495C55%40AdobeOrg=-637568504%7CMCIDTS%7C19765%7CMCMID%7C76810939559009807522106351035606376579%7CMCAAMLH-1708274263%7C6%7CMCAAMB-1708274263%7CRKhpRz8krg2tLO6pguXWp5olkAcUniQYPHaMWWgdJ3xzPWQmdj0y%7CMCOPTOUT-1707676663s%7CNONE%7CvVersion%7C5.1.1%7CMCCIDH%7C-1870694098; fptctx2=taBcrIH61PuCVH7eNCyH0MJojnuUODHcZ6x9WoxhgCnl028zNP2aM5q4%252fRbWNMN6sxBZ%252fmRSGSQG8zO4AmqtoVnomh%252b25Q6SMeeRypBJqNfahuEsINevmF1xqy0YMXo8zDshZCRLUfxpgNHba%252fCLu9vGVhF7A%252b7ppA%252f7WKu434Mlehtouez5BsGVb8%252ftUMwnWfeCV87geXDmR9gSVPjGlaAODT64Xy7AHGk1B7NRPP3oAy7ROtFazFagbQVAauyIlQHFrYDRaix7ETHS8RwSNBNo%252fd3lqtBe%252fGQYUClcAEdG03SZjlSrAHC42409q%252fuOQrF2oPpVxp6GIEFMjnYVtnvSY40rSGyLP6U7nlw%252fnoc%253d; li_mc=MTsyMTsxNzA3Njc1NzUzOzI7MDIxKg598JqJlQhq7sa6pRs1lGyC0GF037FA+6oLarIApis=
+Csrf-Token:
+ajax:3940285677223439640
+Referer:
+https://www.linkedin.com/sales/search/people?coach=false&page=99&query=(recentSearchParam%3A(id%3A2764498354%2CdoLogHistory%3Atrue)%2Cfilters%3AList((type%3AWITH_SHARED_EXPERIENCES%2Cvalues%3AList((id%3ACOMM%2Ctext%3AShared%2520experiences%2CselectionType%3AINCLUDED)))%2C(type%3AINDUSTRY%2Cvalues%3AList((id%3A96%2Ctext%3AIT%2520Services%2520and%2520IT%2520Consulting%2CselectionType%3AINCLUDED)%2C(id%3A4%2Ctext%3ASoftware%2520Development%2CselectionType%3AINCLUDED)%2C(id%3A3099%2Ctext%3AEmbedded%2520Software%2520Products%2CselectionType%3AINCLUDED)%2C(id%3A3101%2Ctext%3ADesktop%2520Computing%2520Software%2520Products%2CselectionType%3AINCLUDED)%2C(id%3A3102%2Ctext%3AIT%2520System%2520Custom%2520Software%2520Development%2CselectionType%3AINCLUDED)%2C(id%3A3100%2Ctext%3AMobile%2520Computing%2520Software%2520Products%2CselectionType%3AINCLUDED)%2C(id%3A3%2Ctext%3AComputer%2520Hardware%2520Manufacturing%2CselectionType%3AINCLUDED)%2C(id%3A6%2Ctext%3ATechnology%252C%2520Information%2520and%2520Internet%2CselectionType%3AINCLUDED)%2C(id%3A5%2Ctext%3AComputer%2520Networking%2520Products%2CselectionType%3AINCLUDED)))%2C(type%3ACURRENT_TITLE%2Cvalues%3AList((id%3A6%2Ctext%3APresident%2CselectionType%3AINCLUDED)%2C(id%3A7%2Ctext%3AVice%2520President%2CselectionType%3AINCLUDED)%2C(id%3A261%2Ctext%3AVice%2520President%2520of%2520Business%2520Development%2CselectionType%3AINCLUDED)%2C(id%3A57%2Ctext%3ASenior%2520Vice%2520President%2CselectionType%3AINCLUDED)%2C(id%3A60%2Ctext%3AExecutive%2520Director%2CselectionType%3AINCLUDED)%2C(id%3A5%2Ctext%3ADirector%2CselectionType%3AINCLUDED)%2C(id%3A16%2Ctext%3AManaging%2520Director%2CselectionType%3AINCLUDED)%2C(id%3A117%2Ctext%3ACreative%2520Director%2CselectionType%3AINCLUDED)%2C(id%3A119%2Ctext%3ADirector%2520of%2520Business%2520Development%2CselectionType%3AINCLUDED)%2C(id%3A133%2Ctext%3ABoard%2520Member%2CselectionType%3AINCLUDED)%2C(id%3A8%2Ctext%3AChief%2520Executive%2520Officer%2CselectionType%3AINCLUDED)%2C(id%3A153%2Ctext%3AChief%2520Technology%2520Officer%2CselectionType%3AINCLUDED)))))&sessionId=koZpG763SD%2BGG5%2Fh0JyKkQ%3D%3D&viewAllFilters=true
+Sec-Ch-Ua:
+"Edge";v="114", "Chromium";v="114", "Not=A?Brand";v="24"
+Sec-Ch-Ua-Mobile:
+?0
+Sec-Ch-Ua-Platform:
+"Windows"
+Sec-Fetch-Dest:
+empty
+Sec-Fetch-Mode:
+cors
+Sec-Fetch-Site:
+same-origin
+User-Agent:
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1788.0
+X-Li-Identity:
+dXJuOmxpOm1lbWJlcjo0MTA4ODU4Mg
+X-Li-Lang:
+en_US
+X-Li-Page-Instance:
+urn:li:page:d_sales2_search_people;DBU4HHPgSFSn400KCB9D3A==
+X-Li-Track:
+{"clientVersion":"1.0.8793","mpVersion":"1.0.8793","osName":"web","timezoneOffset":-5,"timezone":"America/Bogota","deviceFormFactor":"DESKTOP","mpName":"lighthouse-web","displayDensity":1.125,"displayWidth":1728,"displayHeight":972}
+X-Restli-Protocol-Version:
+2.0.0
+
+
+
+q: searchQuery
+query: (recentSearchParam:(id:2764498354,doLogHistory:true),filters:List((type:WITH_SHARED_EXPERIENCES,values:List((id:COMM,text:Shared experiences,selectionType:INCLUDED))),(type:INDUSTRY,values:List((id:96,text:IT Services and IT Consulting,selectionType:INCLUDED),(id:4,text:Software Development,selectionType:INCLUDED),(id:3099,text:Embedded Software Products,selectionType:INCLUDED),(id:3101,text:Desktop Computing Software Products,selectionType:INCLUDED),(id:3102,text:IT System Custom Software Development,selectionType:INCLUDED),(id:3100,text:Mobile Computing Software Products,selectionType:INCLUDED),(id:3,text:Computer Hardware Manufacturing,selectionType:INCLUDED),(id:6,text:Technology, Information and Internet,selectionType:INCLUDED),(id:5,text:Computer Networking Products,selectionType:INCLUDED))),(type:CURRENT_TITLE,values:List((id:6,text:President,selectionType:INCLUDED),(id:7,text:Vice President,selectionType:INCLUDED),(id:261,text:Vice President of Business Development,selectionType:INCLUDED),(id:57,text:Senior Vice President,selectionType:INCLUDED),(id:60,text:Executive Director,selectionType:INCLUDED),(id:5,text:Director,selectionType:INCLUDED),(id:16,text:Managing Director,selectionType:INCLUDED),(id:117,text:Creative Director,selectionType:INCLUDED),(id:119,text:Director of Business Development,selectionType:INCLUDED),(id:133,text:Board Member,selectionType:INCLUDED),(id:8,text:Chief Executive Officer,selectionType:INCLUDED),(id:153,text:Chief Technology Officer,selectionType:INCLUDED)))))
+start: 2475
+count: 25
+trackingParam: (sessionId:koZpG763SD+GG5/h0JyKkQ==)
+decorationId: com.linkedin.sales.deco.desktop.searchv2.LeadSearchResult-14
+
+q=searchQuery&query=(recentSearchParam:(id:2764498354,doLogHistory:true),filters:List((type:WITH_SHARED_EXPERIENCES,values:List((id:COMM,text:Shared%20experiences,selectionType:INCLUDED))),(type:INDUSTRY,values:List((id:96,text:IT%20Services%20and%20IT%20Consulting,selectionType:INCLUDED),(id:4,text:Software%20Development,selectionType:INCLUDED),(id:3099,text:Embedded%20Software%20Products,selectionType:INCLUDED),(id:3101,text:Desktop%20Computing%20Software%20Products,selectionType:INCLUDED),(id:3102,text:IT%20System%20Custom%20Software%20Development,selectionType:INCLUDED),(id:3100,text:Mobile%20Computing%20Software%20Products,selectionType:INCLUDED),(id:3,text:Computer%20Hardware%20Manufacturing,selectionType:INCLUDED),(id:6,text:Technology%2C%20Information%20and%20Internet,selectionType:INCLUDED),(id:5,text:Computer%20Networking%20Products,selectionType:INCLUDED))),(type:CURRENT_TITLE,values:List((id:6,text:President,selectionType:INCLUDED),(id:7,text:Vice%20President,selectionType:INCLUDED),(id:261,text:Vice%20President%20of%20Business%20Development,selectionType:INCLUDED),(id:57,text:Senior%20Vice%20President,selectionType:INCLUDED),(id:60,text:Executive%20Director,selectionType:INCLUDED),(id:5,text:Director,selectionType:INCLUDED),(id:16,text:Managing%20Director,selectionType:INCLUDED),(id:117,text:Creative%20Director,selectionType:INCLUDED),(id:119,text:Director%20of%20Business%20Development,selectionType:INCLUDED),(id:133,text:Board%20Member,selectionType:INCLUDED),(id:8,text:Chief%20Executive%20Officer,selectionType:INCLUDED),(id:153,text:Chief%20Technology%20Officer,selectionType:INCLUDED)))))&start=2475&count=25&trackingParam=(sessionId:koZpG763SD%2BGG5%2Fh0JyKkQ%3D%3D)&decorationId=com.linkedin.sales.deco.desktop.searchv2.LeadSearchResult-14
+
