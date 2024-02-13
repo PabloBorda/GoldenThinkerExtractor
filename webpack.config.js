@@ -1,14 +1,15 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: {
-    contentScript: './src/com_goldenthinkerextractor_contentscript/content.js',
+    content: './src/com_goldenthinkerextractor_contentscript/content.js',
     background: './src/com_goldenthinkerextractor_serviceworker/background.js'
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build/GoldenThinkerExtractor'),
     filename: '[name].js',
   },
   module: {
@@ -37,15 +38,17 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: 'src/manifest.json', to: 'manifest.json' },
-        { from: 'src/icons', to: 'icons' },
-        { from: 'src/popup.html', to: 'popup.html' },
-        { from: 'src/options.html', to: 'options.html' },
+        { from: 'src/images', to: 'images' }, 
+        { from: 'src/com_goldenthinkerextractor_content_html/popup.html', to: 'popup.html' },
+        { from: 'src/com_goldenthinkerextractor_content_styles/popup.css', to: 'popup.css' },
+        { from: 'src/com_goldenthinkerextractor_content_styles/style.css', to: 'style.css' }
         // Add more patterns as needed
       ],
     }),
+    new CleanWebpackPlugin() 
   ],
   devServer: {
-    contentBase: './dist',
+    contentBase: './GoldenThinkerExtractor',
     open: true,
   },
 };

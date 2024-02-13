@@ -175,9 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('.tablinks').click(); // Automatically click the first tab
 });
 
-
-
-
+/* 
 function openTab(tabName) {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
@@ -190,10 +188,7 @@ function openTab(tabName) {
   }
   document.getElementById(tabName).style.display = "block";
   event.currentTarget.className += " active";
-}
-
-
-
+} */
 
 
 document.addEventListener("DOMContentLoaded", function() {
