@@ -149,33 +149,7 @@ function removeSelectorFromCurrentTab(index) {
   });
 }
 
-function openTab(evt, tabName) {
-  // Declare all variables
-  var i, tabcontent, tablinks;
 
-  // Get all elements with class="tabcontent" and hide them
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].style.display = "none";
-  }
-
-  // Get all elements with class="tablinks" and remove the class "active"
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-
-  // Show the current tab, and add an "active" class to the button that opened the tab
-  document.getElementById(tabName).style.display = "block";
-  evt.currentTarget.className += " active";
-}
-
-// Optionally, auto-open a specific tab on popup load
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelector('.tablinks').click(); // Automatically click the first tab
-});
-
-/* 
 function openTab(tabName) {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
@@ -187,8 +161,8 @@ function openTab(tabName) {
       tablinks[i].className = tablinks[i].className.replace(" active", "");
   }
   document.getElementById(tabName).style.display = "block";
-  event.currentTarget.className += " active";
-} */
+  evt.currentTarget.className += " active";
+}
 
 
 document.addEventListener("DOMContentLoaded", function() {
