@@ -2,10 +2,11 @@
 
 function attach_event_listeners(){
   // Save selectors to cookies
-    console.log("Attaching event listener to start/stopScript button");
+  console.log("Attaching event listener to start/stopScript button");
 
-    const startstopScriptButton = document.getElementById("startButton");
-    startstopScriptButton.addEventListener("click", function() {
+  const startstopScriptButton = document.getElementById("startButton");
+  
+  startstopScriptButton.addEventListener("click", function() {
       if (this.innerHTML === "Start") {
         console.log("Start button clicked");
         this.style.backgroundColor = "#f44336";
@@ -27,10 +28,10 @@ function attach_event_listeners(){
           window.close();
         });
       }
-    });
+  });
 
 
-    document.getElementById("downloadButton").addEventListener("click", function() {
+  document.getElementById("downloadButton").addEventListener("click", function() {
       console.log("downloading...");
       const filenameInput = document.getElementById("filename");
       const filename = filenameInput.value.trim() || "download"; // Use a default filename if none is provided
@@ -68,8 +69,6 @@ function attach_event_listeners(){
     });
   });
 
-
-
   document.getElementById("addElementButton").addEventListener("click", function() {
     const nameInput = document.getElementById("elementName");
     const selectorInput = document.getElementById("elementSelector");
@@ -100,11 +99,73 @@ function attach_event_listeners(){
     } else {
         alert("Please fill in both name and selector fields.");
     }
-});
+  });
 
 
 }
 
+document.addEventListener("DOMContentLoaded", function() {
+  console.log("DOMContentLoaded");
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    const url = new URL(tabs[0].url);
+    const domain = url.hostname;
+    document.getElementById("domainName").textContent = domain;
+  });
+  attach_event_listeners();
+  loadSelectorsForCurrentTab(); // Load selectors for the current tab
+
+  var tablinks = document.getElementsByClassName("tablinks");
+  for (let i = 0; i < tablinks.length; i++) {
+      tablinks[i].addEventListener('click', function(event) {
+          var tabName = this.getAttribute('data-tab');
+          openTab(event,tabName);
+      });
+
+      // Automatically open the first tab or a specific tab
+      if(tablinks.length > 0) {
+        tablinks[0].click();
+      }
+    }
+
+    
+
+    function getFaviconUrl(url) {
+      // Assuming favicon is at the root directory as a fallback
+      let faviconUrl = `${url.protocol}//${url.hostname}/favicon.ico`;
+    
+      // Attempt to fetch the favicon specified in the page's link element
+      function findFaviconInDocument() {
+        const link = document.querySelector("link[rel~='icon']");
+        if (link) {
+          return link.href;
+        }
+        return '';
+      }
+
+      chrome.scripting.executeScript({
+        target: {tabId: url.id},
+        function: findFaviconInDocument,
+      }, (injectionResults) => {
+        for (const frameResult of injectionResults)
+          if (frameResult.result && frameResult.result !== '') {
+            faviconUrl = frameResult.result;
+            break;
+          }
+        document.getElementById('target_favicon').src = faviconUrl;
+      });
+    
+      return faviconUrl; // This will return the default favicon path or the updated one if found
+    }
+
+    
+    // Fetch and display the favicon and domain
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      const url = new URL(tabs[0].url);
+      document.getElementById("domainName").textContent = url.hostname;
+      document.getElementById('target_favicon').src = `${url.protocol}//${url.host}/favicon.ico`;
+    });
+
+});
 
 function loadSelectorsForCurrentTab() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -150,41 +211,24 @@ function removeSelectorFromCurrentTab(index) {
 }
 
 
-function openTab(tabName) {
+function openTab(evt, tabName) {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
   for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].style.display = "none";
+    tabcontent[i].style.display = "none";
   }
   tablinks = document.getElementsByClassName("tablinks");
   for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
   }
-  document.getElementById(tabName).style.display = "block";
-  evt.currentTarget.className += " active";
+  var targetTab = document.getElementById(tabName);
+  if (targetTab) {
+    targetTab.style.display = "block";
+    evt.currentTarget.className += " active";
+  } else {
+    console.error("Tab not found: ", tabName);
+  }
 }
 
 
-document.addEventListener("DOMContentLoaded", function() {
-    console.log("DOMContentLoaded");
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      const url = new URL(tabs[0].url);
-      const domain = url.hostname;
-      document.getElementById("domainName").textContent = domain;
-    });
-    attach_event_listeners();
-    loadSelectorsForCurrentTab(); // Load selectors for the current tab
 
-    var tablinks = document.getElementsByClassName("tablinks");
-    for (let i = 0; i < tablinks.length; i++) {
-        tablinks[i].addEventListener('click', function() {
-            var tabName = this.getAttribute('data-tab');
-            openTab(tabName);
-        });
-
-        // Automatically open the first tab or a specific tab
-        if(tablinks.length > 0) {
-          tablinks[0].click();
-        }
-      }
-});

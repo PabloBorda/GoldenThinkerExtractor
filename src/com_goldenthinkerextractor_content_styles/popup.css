@@ -167,3 +167,13 @@ a button {
 #maintitle {
   color: white;
 }
+
+.tabcontent.active {
+  display: block;
+}
+
+/* Additional styles */
+.tab button.active {
+  background-color: #555;
+  color: white;
+}
