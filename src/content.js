@@ -212,7 +212,7 @@ function removeSelectorFromCurrentTab(index) {
 
 
 function openTab(evt, tabName) {
-  var i, tabcontent, tablinks;
+  var i,tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
   for (i = 0; i < tabcontent.length; i++) {
     tabcontent[i].style.display = "none";

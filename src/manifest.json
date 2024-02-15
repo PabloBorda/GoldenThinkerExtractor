@@ -4,12 +4,12 @@
   "description": "An extension to extract fields from web pages",
   "version": "1.0",
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "com_goldenthinkerextractor_content_html/popup.html",
     "default_icon": {
-      "16": "images/icon16.png",
-      "32": "images/icon32.png",
-      "48": "images/icon48.png",
-      "128": "images/icon128.png"
+      "16": "com_goldenthinkerextractor_images/icon16.png",
+      "32": "com_goldenthinkerextractor_images/icon32.png",
+      "48": "com_goldenthinkerextractor_images/icon48.png",
+      "128": "com_goldenthinkerextractor_images/icon128.png"
     }
   },
   "permissions": [
@@ -36,7 +36,12 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["popup.html", "popup.css", "contentScript.js"],
+      "resources": [
+        "com_goldenthinkerextractor_content_html/popup.html",
+        "com_goldenthinkerextractor_content_styles/popup.css",
+        "com_goldenthinkerextractor_content_styles/style.css",
+        "com_goldenthinkerextractor_simulator/userSimulator.js"
+      ],
       "matches": ["https://*/*"]
     }
   ],

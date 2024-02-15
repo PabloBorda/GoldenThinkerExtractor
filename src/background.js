@@ -1,3 +1,6 @@
+import { extractFiltersAndValues } from './com_goldenthinkerextractor_filters_for_website/filters.js';
+
+
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (message.action === "startScript") {
         let tab = message.tab.id;
@@ -148,16 +151,27 @@ async function mainScript() {
     }
    */
 
+
+
+
     async function storeResultsLocally(newResults) {
+
+
         // Retrieve the existing results array from storage
         chrome.storage.local.get(["globalResultsArray"], function(data) {
-            let existingResults = data.globalResultsArray || [];
-            
+            let completeObject = {
+                filters: [],
+                leads: []
+            };
+            if (!completeObject.filters){
+                completeObject.filter = extractFiltersAndValues();
+            }
+            completeObject.leads = data.globalResultsArray || [];
             // Append new results to the existing array
-            existingResults.push(...newResults);
+            completeObject.leads.push(...newResults);
             
             // Store the updated array back into chrome.storage
-            chrome.storage.local.set({ "globalResultsArray": existingResults }, function() {
+            chrome.storage.local.set({ "globalResultsArray": completeObject.leads }, function() {
                 console.log("New results have been added to the global array.");
             });
         });
