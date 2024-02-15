@@ -177,3 +177,14 @@ a button {
   background-color: #555;
   color: white;
 }
+
+
+#maintitle {
+  background-image: url('../com_goldenthinkerextractor_images/thinker_coder.png'); /* Adjust the path as needed */
+  background-size: cover; /* Cover the entire area of the container */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-position: center; /* Center the background image */
+  color: white; /* Adjust text color for visibility */
+  width: 100%; /* Ensure it spans the full width of its container */
+  height: 200px; /* Adjust the height as needed to display the image properly */
+}
