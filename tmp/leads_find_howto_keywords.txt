@@ -1,0 +1,204 @@
+the following file names are search filters that I have used in the linkedin sales navigator to specifically extract data.
+
+/recruiters
+./recruiters/ai
+./recruiters/ai/ai_recruiters_companies.json
+./recruiters/financial_tech_recruiters
+./recruiters/financial_tech_recruiters/latam_financial_industry_techrecruiters.json
+./recruiters/financial_tech_recruiters/recruiters_financial_services_europe_beforepage_59.json
+./recruiters/normalcompanies
+./recruiters/normalcompanies/technical_recruiters_companies_higher_than_50_employees_USA.json
+./recruiters/normalcompanies/technical_recruiter_morethan10000_employeer_companies_usa.json
+./research_scientists
+./research_scientists/ai_research_people_main_companies.json
+./research_scientists/role_human_computer_interaction.json
+./retail
+./retail/uk
+./retail/uk/buyers_retail_groseries_ireland_uk.json
+./retail/usa
+./retail/usa/buyers_retail_groseries_usa.json
+./retail/usa/buyers_retail_retailpharmacies_food_and_beberage_retail_usa.json
+./tech_companies
+./tech_companies/ceos
+./tech_companies/ceos/ceos_technology_global.json
+
+
+I want to do different things: 
+
+*On one hand I am looking for jobs related to human-computer interaction... some research role. 
+*Find any work on technology
+*I want to sell my book Subjective Technologies on amazon.com.
+*Find work in technology on the financial industry/payments/crypto/etc
+*Sell Coffee to supermarkets
+*Sell supplements for brain performance. 
+
+
+The following are the search filters from linkedin sales navigator, what keywords can I apply in order to obtain more leads for the different purposes ? 
+
+
+For each of the things I need to do, generate linkedin sales navigator filters suitable in order to maximize the amount of leads. 
+
+The following are the linkedin sales navigator filter fields:  
+
+
+
+
+Company
+
+Current company
+
+Expand Current company filter
+Cerner Corporation
+
+
+Company headcount
+
+Expand Company headcount filter
+
+Past company
+
+Expand Past company filter
+
+Company type
+Expand Company type filter
+
+Company headquarters location
+Expand Company headquarters location filter
+Role
+
+
+Function
+
+Expand Function filter
+Healthcare Services
+(8M+)
+
+
+Seniority level
+
+Expand Seniority level filter
+Entry Level
+
+
+Past job title
+Expand Past job title filter
+
+Years in current company
+Expand Years in current company filter
+
+Years in current position
+Expand Years in current position filter
+Personal
+
+
+Geography
+United States
+
+
+
+Expand Geography filter
+
+Greater Delhi Area
+(11M+)
+
+
+Industry
+
+Expand Industry filter
+
+First name
+Expand First name filter
+
+Last name
+Expand Last name filter
+
+Profile language
+Expand Profile language filter
+
+Years of experience
+Expand Years of experience filter
+
+Groups
+Expand Groups filter
+
+School
+Expand School filter
+
+Buyer intent
+
+
+
+Following your company (0)
+Select Following your company filter
+
+
+Viewed your profile recently (0)
+Select Viewed your profile recently filter
+
+Best path in
+
+
+
+Connection
+
+Expand Connection filter
+
+Connections of
+Expand Connections of filter
+
+Past colleague (166)
+Select Past colleague filter
+
+
+Shared experiences (555)
+Select Shared experiences filter
+
+Recent updates
+
+
+
+Changed jobs (822)
+Select Changed jobs filter
+
+
+Posted on LinkedIn (886)
+Select Posted on LinkedIn filter
+
+
+Mentioned in news (4)
+Select Mentioned in news filter
+
+Workflow
+
+
+Persona
+New
+
+Expand Persona filter
+
+Account lists
+Expand Account lists filter
+
+Lead lists
+Expand Lead lists filter
+
+People in CRM
+Expand People in CRM filter
+To enable filter, upgrade contract
+
+
+
+People you interacted with
+
+Expand People you interacted with filter
+
+Saved leads and accounts
+
+
+Sort all these fields in a json object with each filter element as a key, and then a value or multiple values possibles. 
+
+
+
+For each of the things I want to do: 
+
+Put them in a json object and according to the things that I want to do suggest possible filter values that could work in order to find the correct leads taking into account the file names I shared as keyword filters to find the right target.

@@ -1,1 +1,58 @@
-function simulateTyping(e,n,o=0){const t=document.querySelector(e);if(!t)return void console.error("Input field not found");t.focus();const s=n.split("");let c=Promise.resolve();s.forEach((e=>{c=c.then((()=>new Promise((n=>{setTimeout((()=>{const o=new KeyboardEvent("keydown",{key:e,code:`Key${e.toUpperCase()}`,bubbles:!0});t.dispatchEvent(o),t.value+=e;const s=new KeyboardEvent("keyup",{key:e,code:`Key${e.toUpperCase()}`,bubbles:!0});t.dispatchEvent(s);const c=new Event("input",{bubbles:!0});t.dispatchEvent(c),n()}),Math.random()*o)}))))}))}function listenMouseMovement(){document.addEventListener("mousemove",(function(e){const n=e.clientX,o=e.clientY;console.log(`Mouse position: X=${n}, Y=${o}`)}))}
+function simulateTyping(selector, value, maxDelayMs = 0) {
+    const input = document.querySelector(selector);
+    if (!input) {
+        console.error('Input field not found');
+        return;
+    }
+
+    input.focus();
+
+    const chars = value.split('');
+    let typingPromise = Promise.resolve(); // Start with a resolved promise
+
+    chars.forEach(char => {
+        typingPromise = typingPromise.then(() => {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    // Create and dispatch the keydown event
+                    const keydownEvent = new KeyboardEvent('keydown', {
+                        key: char,
+                        code: `Key${char.toUpperCase()}`,
+                        bubbles: true
+                    });
+                    input.dispatchEvent(keydownEvent);
+
+                    input.value += char; // Add character to input value
+
+                    // Create and dispatch the keyup event
+                    const keyupEvent = new KeyboardEvent('keyup', {
+                        key: char,
+                        code: `Key${char.toUpperCase()}`,
+                        bubbles: true
+                    });
+                    input.dispatchEvent(keyupEvent);
+
+                    // Trigger input event after keyup to simulate the input change
+                    const event = new Event('input', { bubbles: true });
+                    input.dispatchEvent(event);
+
+                    resolve(); // Resolve the promise to allow the next iteration
+                }, Math.random() * maxDelayMs);
+            });
+        });
+    });
+}
+
+
+
+function listenMouseMovement(){
+    document.addEventListener('mousemove', function(event) {
+        const x = event.clientX; // Get the horizontal coordinate
+        const y = event.clientY; // Get the vertical coordinate
+        console.log(`Mouse position: X=${x}, Y=${y}`);
+    }); 
+}
+
+
+
+// Usage example: simulateTyping('#inputSelector', 'Hello World', 200);

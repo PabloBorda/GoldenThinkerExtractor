@@ -4,32 +4,27 @@ function attach_event_listeners(){
   // Save selectors to cookies
   console.log("Attaching event listener to start/stopScript button");
 
-  const startstopScriptButton = document.getElementById("startButton");
-  
-  startstopScriptButton.addEventListener("click", function() {
-      if (this.innerHTML === "Start") {
-        console.log("Start button clicked");
-        this.style.backgroundColor = "#f44336";
-        this.innerHTML = "stopScript";
-        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-          console.log("Sending 'startScript' message to background script");
-          chrome.runtime.sendMessage({ action: "startScript", tab: tabs[0] }, function(response) {
-            // Close the popup window after sending the message
-            window.close();
-          });
+  document.getElementById("startButton").addEventListener("click", function() {
+    const button = this;
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+        const activeTab = tabs[0];
+        console.log("Sending 'startScript' message to background script");
+        chrome.runtime.sendMessage({ action: "startScript", tab: activeTab }, function(response) {
+            if (chrome.runtime.lastError) {
+                console.error("Error sending message:", chrome.runtime.lastError.message);
+                return;
+            }
+            if (response.status === "success") {
+                console.log("Script injection worked.");
+                button.innerHTML = "Stop";
+                // Handle UI changes or further actions
+            } else if (response.status === "error") {
+                console.error("Script failed to inject:", response.message);
+                // Handle error
+            }
         });
-      } else {
-        console.log("stopScript button clicked");
-        this.style.backgroundColor = ""; // Reset button color
-        this.innerHTML = "Start";
-        console.log("Sending 'stopScript' message to background script");
-        chrome.runtime.sendMessage({ action: "stopScript", tab: tabs[0] }, function(response) {
-          // Close the popup window after sending the message
-          window.close();
-        });
-      }
-  });
-
+    });
+});
 
   document.getElementById("downloadButton").addEventListener("click", function() {
       console.log("downloading...");
