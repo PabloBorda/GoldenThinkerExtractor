@@ -2,9 +2,19 @@
 /******/ 	"use strict";
 var __webpack_exports__ = {};
 
+var tabmap = [];
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === "startScript") {
-    var tabId = message.tab.id;
+    // Use sender.tab.id if message.tab is undefined
+    var tabId = sender.tab ? sender.tab.id : null;
+    if (!tabId) {
+      console.error("Tab ID is undefined.");
+      sendResponse({
+        status: "error",
+        message: "Tab ID is undefined."
+      });
+      return true;
+    }
 
     // Fetch the tab information to get its URL
     chrome.tabs.get(tabId, function (tab) {
@@ -40,6 +50,20 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       status: "stopped"
     });
     return true;
+  } else if (message.action === "openNewTab") {
+    tabmap.push(message.tab.id);
+    chrome.tabs.create({
+      url: message.url,
+      active: false
+    }, function (newTab) {
+      chrome.tabs.update(newTab.id, {
+        active: true
+      });
+    });
+    sendResponse({
+      status: "new_opened_tab",
+      message: tabmap.pop()
+    });
   }
 });
 chrome.webRequest.onCompleted.addListener(function (details) {

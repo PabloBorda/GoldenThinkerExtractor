@@ -1,10 +1,19 @@
 import { extractFiltersAndValues } from './com_goldenthinkerextractor_filters_for_website/filters.js';
 
 
+let tabmap = [];
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "startScript") {
-        const tabId = message.tab.id;
+        // Use sender.tab.id if message.tab is undefined
+        const tabId = sender.tab ? sender.tab.id : null;
 
+        if (!tabId) {
+            console.error("Tab ID is undefined.");
+            sendResponse({ status: "error", message: "Tab ID is undefined." });
+            return true;
+        }
+        
         // Fetch the tab information to get its URL
         chrome.tabs.get(tabId, function(tab) {
             // Extract the domain from the tab's URL
@@ -31,7 +40,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Handle stopScript action
         sendResponse({ status: "stopped" });
         return true;
-    }
+    } else if (message.action === "openNewTab") {
+          tabmap.push(message.tab.id);
+          chrome.tabs.create({ url: message.url, active: false }, function(newTab) {
+            chrome.tabs.update(newTab.id, { active: true });
+          });
+        sendResponse({status: "new_opened_tab",message: tabmap.pop()});
+      }
 });
 
 

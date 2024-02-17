@@ -1,4 +1,3 @@
-
 const categories = [
     {
       "category_name": "Accesorios para Vehículos",
@@ -1838,44 +1837,131 @@ const categories = [
     }
   ];
   
+
+  function extractProductDetails() {
+    const productDetails = {};
+
+    // Product Title
+    const titleElement = document.querySelector('h1.ui-pdp-title');
+    productDetails.title = titleElement ? titleElement.innerText : '';
+
+    // Image URLs
+    productDetails.images = [];
+    const imageElements = document.querySelectorAll('.ui-pdp-gallery img.ui-pdp-image');
+    imageElements.forEach(img => {
+        const src = img.getAttribute('data-zoom') || img.src; // Prefer high-res images
+        if (src) {
+            productDetails.images.push(src);
+        }
+    });
+
+    // Price and Currency
+    const priceElement = document.querySelector('span.andes-money-amount.ui-pdp-price__part');
+    if (priceElement) {
+        const price = priceElement.querySelector('span.andes-money-amount__fraction')?.innerText.replace('.', '') || '';
+        const currencySymbol = priceElement.querySelector('span.andes-money-amount__currency-symbol')?.innerText || '';
+        productDetails.price = `${currencySymbol}${price}`;
+    }
+
+    // Payment Methods
+    productDetails.paymentMethods = [];
+    const paymentMethodElements = document.querySelectorAll('.ui-vip-payment_methods img.ui-pdp-image');
+    paymentMethodElements.forEach(method => {
+        const altText = method.alt;
+        if (altText) {
+            productDetails.paymentMethods.push(altText);
+        }
+    });
+
+    // Stock
+    const stockElement = document.querySelector('span.ui-pdp-buybox__quantity__available');
+    productDetails.stock = stockElement ? stockElement.innerText.match(/\d+/)[0] : 'Unknown';
+
+    // Stock Availability Flag
+    const stockAvailableElement = document.querySelector('div.ui-pdp-stock-information p.ui-pdp-color--BLACK');
+    productDetails.stockAvailable = !!stockAvailableElement;
+
+    // Shipping
+    const shippingElement = document.querySelector('div.ui-pdp-media__body p.ui-pdp-color--BLACK');
+    productDetails.shipping = shippingElement ? shippingElement.innerText : 'Unknown';
+
+    // Seller Name and Link (Assuming the link is the parent element of the seller name span)
+    const sellerNameElement = document.querySelector('div.ui-pdp-seller__link-trigger a.ui-pdp-action-modal__link span');
+    if (sellerNameElement) {
+        productDetails.seller = {
+            name: sellerNameElement.innerText,
+            link: sellerNameElement.closest('a')?.href || 'Unknown'
+        };
+    }
+
+    // Product Returns
+    const returnElement = document.querySelector('div.ui-pdp-action-modal a.ui-pdp-action-modal__link');
+    productDetails.returns = returnElement ? returnElement.href : 'Unknown';
+
+    // Seller Information
+    productDetails.sellerInformation = {};
+    const salesElement = document.querySelector('li.ui-pdp-seller__item-description strong.ui-pdp-seller__sales-description');
+    productDetails.sellerInformation.sales = salesElement ? salesElement.innerText : 'Unknown';
+    const goodServiceElement = document.querySelector('li.ui-pdp-seller__item-description p[title="Brinda buena atención"]');
+    productDetails.sellerInformation.goodService = !!goodServiceElement;
+    const onTimeDeliveryElement = document.querySelector('li.ui-pdp-seller__item-description p[title="Entrega sus productos a tiempo"]');
+    productDetails.sellerInformation.onTimeDelivery = !!onTimeDeliveryElement;
+
+    // Product Characteristics
+    productDetails.characteristics = [];
+    const characteristicsElements = document.querySelectorAll('.andes-table__column--value');
+    characteristicsElements.forEach(element => {
+        productDetails.characteristics.push(element.innerText.trim());
+    });
+
+    // Product Description
+    const descriptionElement = document.querySelector('div.ui-pdp-description__content');
+    productDetails.description = descriptionElement ? descriptionElement.innerHTML.trim() : '';
+
+    // Product New/Used Flag, and Amount of Sales
+    const subtitleElement = document.querySelector('span.ui-pdp-subtitle');
+    if (subtitleElement) {
+        const subtitleText = subtitleElement.innerText.split('|');
+        productDetails.condition = subtitleText[0]?.trim();
+        productDetails.soldQuantity = subtitleText[1]?.trim();
+    }
+
+    // Amount of Reviews
+    const reviewAmountElement = document.querySelector('span.ui-pdp-review__amount');
+    productDetails.reviewAmount = reviewAmountElement ? reviewAmountElement.innerText.replace(/[()]/g, '') : 'Unknown';
+
+    // Stars
+    const starsElement = document.querySelector('p.ui-review-capability__rating__average');
+    productDetails.stars = starsElement ? parseFloat(starsElement.innerText) : 'Unknown';
+
+    return productDetails;
+}
+
+
   categories.forEach(category => {
     console.log(`Category Name: ${category.category_name}`);
     console.log(`Category Link: ${category.link}`);
     category.subcategories.forEach(subcategory => {
+      const requestToOpenTab = { action: "openNewTab", url: subcategory.link };
+      chrome.runtime.sendMessage(requestToOpenTab);
       console.log(`  Subcategory Name: ${subcategory.subcategory_name}`);
-      console.log(`  Subcategory Link: ${subcategory.link}`);
+      console.log(`  Open Link in new tab: ${subcategory.link}`);
     });
   });
 
+
   
-function openSubcategoryInNewTab(subcategories, index = 0) {
-    // Base case: stop if we've gone through all subcategories
-    if (index >= subcategories.length) {
-      console.log("Done with all subcategories.");
-      return;
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action == "new_opened_tab"){
+      const current_tab = message.tab.id;
+      const current_url = message.tab.url;
+      if (url.includes('articulo.mercadolibre.com.co') && url.match(/MCO-\d+/)) {
+        console.log("This URL belongs to a product.");
+        console.log(extractProductDetails());
+        // Perform your action here, e.g., send message to content script or popup
+      } else {
+        console.log("This URL does not belong to a product.");
+      }
     }
-  
-    const subcategory = subcategories[index];
-    console.log(`Opening ${subcategory.subcategory_name}: ${subcategory.link}`);
-  
-    // Use the Chrome Tabs API to open the link in a new tab
-    chrome.tabs.create({ url: subcategory.link, active: false }, (tab) => {
-      console.log(`Opened ${subcategory.subcategory_name} in a new tab.`);
-  
-      // Listen for the tab being closed
-      chrome.tabs.onRemoved.addListener(function onTabClosed(tabId, removeInfo) {
-        if (tabId === tab.id) {
-          // Stop listening for tab close to avoid memory leaks
-          chrome.tabs.onRemoved.removeListener(onTabClosed);
-  
-          // Recursively open the next subcategory
-          openSubcategoryInNewTab(subcategories, index + 1);
-        }
-      });
-    });
-  }
-  
-  // Example usage: Open subcategories of the first category
-  if (categories.length > 0) {
-    openSubcategoryInNewTab(categories[0].subcategories);
-  }
+  });
+
