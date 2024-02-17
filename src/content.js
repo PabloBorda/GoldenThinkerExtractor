@@ -9,7 +9,7 @@ function attach_event_listeners(){
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
         const activeTab = tabs[0];
         console.log("Sending 'startScript' message to background script");
-        chrome.runtime.sendMessage({ action: "startScript", tab: activeTab }, function(response) {
+        chrome.runtime.sendMessage({ action: "startScript", tabId: activeTab.id }, function(response) {
             if (chrome.runtime.lastError) {
                 console.error("Error sending message:", chrome.runtime.lastError.message);
                 return;

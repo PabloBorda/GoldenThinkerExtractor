@@ -1,12 +1,12 @@
 import { extractFiltersAndValues } from './com_goldenthinkerextractor_filters_for_website/filters.js';
 
 
-let tabmap = [];
+
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "startScript") {
         // Use sender.tab.id if message.tab is undefined
-        const tabId = sender.tab ? sender.tab.id : null;
+        const tabId = message.tabId;
 
         if (!tabId) {
             console.error("Tab ID is undefined.");
@@ -40,12 +40,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Handle stopScript action
         sendResponse({ status: "stopped" });
         return true;
-    } else if (message.action === "openNewTab") {
-          tabmap.push(message.tab.id);
+    } else if (message.action === "open_new_tab") {
+          const parent_tab_id = message.tabId;
           chrome.tabs.create({ url: message.url, active: false }, function(newTab) {
             chrome.tabs.update(newTab.id, { active: true });
-          });
-        sendResponse({status: "new_opened_tab",message: tabmap.pop()});
+            console.log(JSON.stringify({status: "tab_was_opened", message: { new_tab_id: newTab.id, parent_tab: parent_tab_id }}));
+            sendResponse({status: "tab_was_opened", message: { new_tab_id: newTab.id, parent_tab: parent_tab_id }});
+          }); 
       }
 });
 

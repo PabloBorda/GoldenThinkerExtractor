@@ -1937,31 +1937,51 @@ const categories = [
     return productDetails;
 }
 
+function closeCurrentAndActivatePreviousTab(currentTabId, previousTabId) {
+  // Close the current tab
+  chrome.tabs.remove(currentTabId, function() {
+      // Once the tab is closed, activate the previous tab
+      chrome.tabs.update(previousTabId, {active: true}, function(tab) {
+          // Optional: You might want to focus the window of the activated tab
+          chrome.windows.update(tab.windowId, {focused: true});
+      });
+  });
+}
+
+
+
+
 
   categories.forEach(category => {
     console.log(`Category Name: ${category.category_name}`);
     console.log(`Category Link: ${category.link}`);
     category.subcategories.forEach(subcategory => {
-      const requestToOpenTab = { action: "openNewTab", url: subcategory.link };
-      chrome.runtime.sendMessage(requestToOpenTab);
+
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      const activeTab = tabs[0];
+      chrome.runtime.sendMessage({
+          action: "open_new_tab",
+          url: subcategory.link,
+          tabId: activeTab.id // Ensure you're sending tabId correctly
+      },function(response){
+        if (response.status==="tab_was_opened"){
+          const new_tab_opened_id =  response.message.new_tab_id;
+          const paren_tab_id = response.message.paren_tab_id;
+          const url = subcategory.link;
+          if (url.includes('articulo.mercadolibre.com.co') && url.match(/MCO-\d+/)) {
+            console.log("This URL belongs to a product.");
+            console.log(extractProductDetails());
+            closeCurrentAndActivatePreviousTab(new_tab_opened_id,paren_tab_id);
+            // Perform your action here, e.g., send message to content script or popup
+          } else {
+            console.log("This URL does not belong to a product.");
+          }
+        }
+
+      } 
+      );
+    });
       console.log(`  Subcategory Name: ${subcategory.subcategory_name}`);
       console.log(`  Open Link in new tab: ${subcategory.link}`);
     });
   });
-
-
-  
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action == "new_opened_tab"){
-      const current_tab = message.tab.id;
-      const current_url = message.tab.url;
-      if (url.includes('articulo.mercadolibre.com.co') && url.match(/MCO-\d+/)) {
-        console.log("This URL belongs to a product.");
-        console.log(extractProductDetails());
-        // Perform your action here, e.g., send message to content script or popup
-      } else {
-        console.log("This URL does not belong to a product.");
-      }
-    }
-  });
-

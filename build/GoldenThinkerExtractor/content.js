@@ -18,7 +18,7 @@ function attach_event_listeners() {
       console.log("Sending 'startScript' message to background script");
       chrome.runtime.sendMessage({
         action: "startScript",
-        tab: activeTab
+        tabId: activeTab.id
       }, function (response) {
         if (chrome.runtime.lastError) {
           console.error("Error sending message:", chrome.runtime.lastError.message);

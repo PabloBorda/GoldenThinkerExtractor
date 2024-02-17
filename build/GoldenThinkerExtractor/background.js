@@ -2,11 +2,10 @@
 /******/ 	"use strict";
 var __webpack_exports__ = {};
 
-var tabmap = [];
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === "startScript") {
     // Use sender.tab.id if message.tab is undefined
-    var tabId = sender.tab ? sender.tab.id : null;
+    var tabId = message.tabId;
     if (!tabId) {
       console.error("Tab ID is undefined.");
       sendResponse({
@@ -50,8 +49,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       status: "stopped"
     });
     return true;
-  } else if (message.action === "openNewTab") {
-    tabmap.push(message.tab.id);
+  } else if (message.action === "open_new_tab") {
+    var parent_tab_id = message.tabId;
     chrome.tabs.create({
       url: message.url,
       active: false
@@ -59,10 +58,13 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       chrome.tabs.update(newTab.id, {
         active: true
       });
-    });
-    sendResponse({
-      status: "new_opened_tab",
-      message: tabmap.pop()
+      sendResponse({
+        status: "tab_was_opened",
+        message: {
+          new_tab_id: newTab.id,
+          parent_tab: parent_tab_id
+        }
+      });
     });
   }
 });
