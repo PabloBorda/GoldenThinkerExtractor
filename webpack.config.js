@@ -42,7 +42,6 @@ module.exports = {
         { from: 'src/com_goldenthinkerextractor_content_html/popup.html', to: 'com_goldenthinkerextractor_content_html/popup.html' },
         { from: 'src/com_goldenthinkerextractor_content_styles/popup.css', to: 'com_goldenthinkerextractor_content_styles/popup.css' },
         { from: 'src/com_goldenthinkerextractor_content_styles/style.css', to: 'com_goldenthinkerextractor_content_styles/style.css' },
-        { from: 'src/com_goldenthinkerextractor_simulator/userSimulator.js', to: 'com_goldenthinkerextractor_simulator/userSimulator.js'},
         { from: 'src/com_goldenthinkerextractor_injection', to: 'com_goldenthinkerextractor_injection'}
       ],
     }),

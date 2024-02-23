@@ -10,28 +10,28 @@ content.js
 
 function attach_event_listeners(){
   // Save selectors to cookies
-  console.log("Attaching event listener to start/stopScript button");
+  console.log("Attaching event listener to start/stop_script button");
 
-  const startstopScriptButton = document.getElementById("startButton");
+  const startstop_scriptButton = document.getElementById("startButton");
   
-  startstopScriptButton.addEventListener("click", function() {
+  startstop_scriptButton.addEventListener("click", function() {
       if (this.innerHTML === "Start") {
         console.log("Start button clicked");
         this.style.backgroundColor = "#f44336";
-        this.innerHTML = "stopScript";
+        this.innerHTML = "stop_script";
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-          console.log("Sending 'startScript' message to background script");
-          chrome.runtime.sendMessage({ action: "startScript", tab: tabs[0] }, function(response) {
+          console.log("Sending 'start_script' message to background script");
+          chrome.runtime.sendMessage({ action: "start_script", tab: tabs[0] }, function(response) {
             // Close the popup window after sending the message
             window.close();
           });
         });
       } else {
-        console.log("stopScript button clicked");
+        console.log("stop_script button clicked");
         this.style.backgroundColor = ""; // Reset button color
         this.innerHTML = "Start";
-        console.log("Sending 'stopScript' message to background script");
-        chrome.runtime.sendMessage({ action: "stopScript", tab: tabs[0] }, function(response) {
+        console.log("Sending 'stop_script' message to background script");
+        chrome.runtime.sendMessage({ action: "stop_script", tab: tabs[0] }, function(response) {
           // Close the popup window after sending the message
           window.close();
         });
@@ -249,7 +249,7 @@ import { extractFiltersAndValues } from './com_goldenthinkerextractor_filters_fo
 
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    if (message.action === "startScript") {
+    if (message.action === "start_script") {
         let tab = message.tab.id;
         try {
             await chrome.scripting.executeScript({
@@ -262,7 +262,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             console.error("Error injecting script into tab " + tab, error);
             sendResponse({status: "error", message: error.message});
         }
-    } else if (message.action === "stopScript") {
+    } else if (message.action === "stop_script") {
         console.log("Script stopped.");
         // Implement stopping logic if necessary
         sendResponse({status: "stopped"});
@@ -550,7 +550,7 @@ manifest.json:
         "com_goldenthinkerextractor_content_html/popup.html",
         "com_goldenthinkerextractor_content_styles/popup.css",
         "com_goldenthinkerextractor_content_styles/style.css",
-        "com_goldenthinkerextractor_simulator/userSimulator.js"
+        "com_goldenthinkerextractor_simulator/user_simulator.js"
       ],
       "matches": ["https://*/*"]
     }
@@ -606,7 +606,7 @@ module.exports = {
         { from: 'src/com_goldenthinkerextractor_content_html/popup.html', to: 'com_goldenthinkerextractor_content_html/popup.html' },
         { from: 'src/com_goldenthinkerextractor_content_styles/popup.css', to: 'com_goldenthinkerextractor_content_styles/popup.css' },
         { from: 'src/com_goldenthinkerextractor_content_styles/style.css', to: 'com_goldenthinkerextractor_content_styles/style.css' },
-        { from: 'src/com_goldenthinkerextractor_simulator/userSimulator.js', to: 'com_goldenthinkerextractor_simulator/userSimulator.js'}
+        { from: 'src/com_goldenthinkerextractor_simulator/user_simulator.js', to: 'com_goldenthinkerextractor_simulator/user_simulator.js'}
       ],
     }),
     new CleanWebpackPlugin() 
@@ -623,7 +623,7 @@ module.exports = {
 User
 On the extension side , the error happens at:
 
-          chrome.runtime.sendMessage({ action: "startScript", tab: tabs[0] }, function(response) {
+          chrome.runtime.sendMessage({ action: "start_script", tab: tabs[0] }, function(response) {
             // Close the popup window after sending the message
             window.close();
           });`

@@ -39,8 +39,7 @@
       "resources": [
         "com_goldenthinkerextractor_content_html/popup.html",
         "com_goldenthinkerextractor_content_styles/popup.css",
-        "com_goldenthinkerextractor_content_styles/style.css",
-        "com_goldenthinkerextractor_simulator/userSimulator.js"
+        "com_goldenthinkerextractor_content_styles/style.css"
       ],
       "matches": ["https://*/*"]
     }

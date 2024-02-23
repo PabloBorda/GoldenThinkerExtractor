@@ -6,8 +6,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 // CORS: 'sha256-3woF8BZ54TeXM+czaH3aXoaJsVpiamuAKFsXDykAR/Q='
 
 function attach_event_listeners() {
-  // Save selectors to cookies
-  console.log("Attaching event listener to start/stopScript button");
+  // Start Button - execute injection script
   document.getElementById("startButton").addEventListener("click", function () {
     var button = this;
     chrome.tabs.query({
@@ -15,9 +14,9 @@ function attach_event_listeners() {
       currentWindow: true
     }, function (tabs) {
       var activeTab = tabs[0];
-      console.log("Sending 'startScript' message to background script");
+      console.log("Sending 'start_script' message to background script");
       chrome.runtime.sendMessage({
-        action: "startScript",
+        action: "start_script",
         tabId: activeTab.id
       }, function (response) {
         if (chrome.runtime.lastError) {
@@ -35,6 +34,8 @@ function attach_event_listeners() {
       });
     });
   });
+
+  // Download button listener
   document.getElementById("downloadButton").addEventListener("click", function () {
     console.log("downloading...");
     var filenameInput = document.getElementById("filename");
@@ -72,6 +73,8 @@ function attach_event_listeners() {
       }
     });
   });
+
+  // Add selector button
   document.getElementById("addElementButton").addEventListener("click", function () {
     var nameInput = document.getElementById("elementName");
     var selectorInput = document.getElementById("elementSelector");
@@ -107,7 +110,96 @@ function attach_event_listeners() {
       alert("Please fill in both name and selector fields.");
     }
   });
+
+  // execute macro button
+  document.getElementById("apply_macro_button").addEventListener("click", function () {
+    var textareaData = document.getElementById("json_elements").value;
+    // Query the current active tab in the current window
+    chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    }, function (tabs) {
+      var currentTab = tabs[0];
+      if (currentTab) {
+        // Send a message to your background script with the current tab's ID
+        chrome.runtime.sendMessage({
+          action: "apply_macro_button_message",
+          data: textareaData,
+          tabId: currentTab.id // Include the current tab's ID in the message
+        }, function (response) {
+          console.log("Response from background:", response);
+        });
+      }
+    });
+  });
 }
+function loadSelectorsForCurrentTab() {
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true
+  }, function (tabs) {
+    var currentTabId = tabs[0].id.toString();
+    chrome.storage.local.get([currentTabId], function (result) {
+      var selectors = result[currentTabId] ? result[currentTabId] : [];
+      var elementsList = document.getElementById("elementsList");
+      elementsList.innerHTML = ''; // Clear existing list
+
+      selectors.forEach(function (element, index) {
+        var elementItem = document.createElement("div");
+        elementItem.className = "element-item";
+        elementItem.innerHTML = "<td>".concat(element.name, ": ").concat(element.selector, "</td><td></td><td></td><td><button class=\"removeElementButton\" data-index=\"").concat(index, "\">X</button></td>");
+        elementsList.appendChild(elementItem);
+
+        // Add remove functionality
+        elementItem.querySelector(".removeElementButton").addEventListener("click", function () {
+          removeSelectorFromCurrentTab(index);
+        });
+      });
+    });
+  });
+}
+function removeSelectorFromCurrentTab(index) {
+  chrome.tabs.query({
+    active: true,
+    currentWindow: true
+  }, function (tabs) {
+    var currentTabId = tabs[0].id.toString();
+    chrome.storage.local.get([currentTabId], function (result) {
+      var selectors = result[currentTabId];
+      if (selectors) {
+        selectors.splice(index, 1); // Remove the selector at the specified index
+        var storageObject = {};
+        storageObject[currentTabId] = selectors;
+        chrome.storage.local.set(storageObject, function () {
+          console.log('Selector removed for tab ID:', currentTabId);
+          loadSelectorsForCurrentTab(); // Refresh the list of selectors
+        });
+      }
+    });
+  });
+}
+
+// open tab from popup.html
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  var targetTab = document.getElementById(tabName);
+  if (targetTab) {
+    targetTab.style.display = "block";
+    evt.currentTarget.className += " active";
+  } else {
+    console.error("Tab not found: ", tabName);
+  }
+}
+
+// Selector Parameters
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOMContentLoaded");
   chrome.tabs.query({
@@ -181,69 +273,40 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('target_favicon').src = "".concat(url.protocol, "//").concat(url.host, "/favicon.ico");
   });
 });
-function loadSelectorsForCurrentTab() {
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true
-  }, function (tabs) {
-    var currentTabId = tabs[0].id.toString();
-    chrome.storage.local.get([currentTabId], function (result) {
-      var selectors = result[currentTabId] ? result[currentTabId] : [];
-      var elementsList = document.getElementById("elementsList");
-      elementsList.innerHTML = ''; // Clear existing list
-
-      selectors.forEach(function (element, index) {
-        var elementItem = document.createElement("div");
-        elementItem.className = "element-item";
-        elementItem.innerHTML = "<td>".concat(element.name, ": ").concat(element.selector, "</td><td></td><td></td><td><button class=\"removeElementButton\" data-index=\"").concat(index, "\">X</button></td>");
-        elementsList.appendChild(elementItem);
-
-        // Add remove functionality
-        elementItem.querySelector(".removeElementButton").addEventListener("click", function () {
-          removeSelectorFromCurrentTab(index);
-        });
-      });
-    });
-  });
-}
-function removeSelectorFromCurrentTab(index) {
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true
-  }, function (tabs) {
-    var currentTabId = tabs[0].id.toString();
-    chrome.storage.local.get([currentTabId], function (result) {
-      var selectors = result[currentTabId];
-      if (selectors) {
-        selectors.splice(index, 1); // Remove the selector at the specified index
-        var storageObject = {};
-        storageObject[currentTabId] = selectors;
-        chrome.storage.local.set(storageObject, function () {
-          console.log('Selector removed for tab ID:', currentTabId);
-          loadSelectorsForCurrentTab(); // Refresh the list of selectors
-        });
+document.addEventListener('DOMContentLoaded', function () {
+  var textarea = document.getElementById('json_elements');
+  var applyButton = document.getElementById('apply_macro_button');
+  var messageDiv = document.getElementById('validation_message');
+  function validateAndEnableButton(jsonText) {
+    try {
+      var jsonData = JSON.parse(jsonText);
+      if (Array.isArray(jsonData)) {
+        // JSON is valid and is an array
+        applyButton.disabled = false; // Enable the button
+        messageDiv.innerHTML = '<span style="color: green;">✔ JSON data is correct</span>';
+      } else {
+        // JSON is valid but not an array
+        applyButton.disabled = true; // Keep the button disabled
+        messageDiv.innerHTML = '<span style="color: red;">✘ JSON array is not valid</span>';
       }
-    });
+    } catch (error) {
+      // JSON is invalid
+      applyButton.disabled = true; // Keep the button disabled
+      messageDiv.innerHTML = '<span style="color: red;">✘ JSON array is not valid</span>';
+    }
+  }
+  textarea.addEventListener('input', function () {
+    var text = textarea.value.trim();
+    textarea.value = text;
+    console.log(text);
+    if (text) {
+      validateAndEnableButton(text);
+    } else {
+      applyButton.disabled = true; // Keep the button disabled if textarea is empty
+      messageDiv.innerHTML = ''; // Clear the message
+    }
   });
-}
-function openTab(evt, tabName) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-  var targetTab = document.getElementById(tabName);
-  if (targetTab) {
-    targetTab.style.display = "block";
-    evt.currentTarget.className += " active";
-  } else {
-    console.error("Tab not found: ", tabName);
-  }
-}
+});
 /******/ })()
 ;
 //# sourceMappingURL=content.js.map

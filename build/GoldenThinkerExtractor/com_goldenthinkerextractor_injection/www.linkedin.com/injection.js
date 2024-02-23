@@ -1,9 +1,14 @@
+import { container } from "webpack";
+
 async function mainScript() {
   
 
+    var container_selector = "#search-results-container";
+
+    // getContainer
     async function getContainer() {
         return new Promise((resolve, reject) => {
-            const containerSelector = "#search-results-container";
+            const containerSelector = container_selector;
             const checkExist = setInterval(() => {
                 const container = document.querySelector(containerSelector);
                 if (container) {
@@ -14,41 +19,7 @@ async function mainScript() {
         });
     }
   
-/*     async function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    } */
-
-    async function waitForDomChanges(selector, timeout = 30000) {
-        return new Promise(async (resolve, reject) => { // Note the async keyword here
-            const container = await getContainer(); // Properly await the container
-            if (!container) {
-                reject(new Error(`Container with selector "${selector}" not found.`));
-                return;
-            }
-    
-            // Options for the observer (which mutations to observe)
-            const config = { childList: true, subtree: true };
-    
-            // Callback function to execute when mutations are observed
-            const callback = function(mutationsList, observer) {
-                observer.disconnect(); // Stop observing
-                resolve(); // Resolve the promise as changes are detected
-            };
-    
-            // Create an instance of the observer with the callback function
-            const observer = new MutationObserver(callback);
-    
-            // Start observing the target node for configured mutations
-            observer.observe(container, config);
-    
-            // Set a timeout to reject the promise if no changes are detected within the specified time
-            setTimeout(() => {
-                observer.disconnect(); // Stop observing
-                reject(new Error(`Timeout reached. No changes detected in the container within ${timeout} ms.`));
-            }, timeout);
-        });
-    }
-  
+    // Extract data
     async function extractDataFromPage() {
 
         let results = [];
@@ -101,35 +72,8 @@ async function mainScript() {
         return results;
     } 
   
-/*     async function sendResultsToServer(results) {
-        console.log("Sending results to server...");
-        try {
-            // Validate JSON before sending
-            const jsonData = JSON.stringify(results);
-            const response = await fetch("http://127.0.0.1:8080/index", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: jsonData
-            });
-    
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const jsonResponse = await response.json();
-            console.log("Results sent successfully", jsonResponse);
-        } catch (error) {
-            console.error("Error sending results to server:", error);
-        }
-    }
-   */
-
-
-
-
+    // store results
     async function storeResultsLocally(newResults) {
-
 
         // Retrieve the existing results array from storage
         chrome.storage.local.get(["globalResultsArray"], function(data) {
@@ -152,21 +96,27 @@ async function mainScript() {
     }
 
 
+    // click Next
     async function navigateToNextPage() {
-        const nextPageButton = document.querySelector(".artdeco-pagination__button--next:not([disabled])");
-        if (nextPageButton) {
-            nextPageButton.click();
-            waitForDomChanges("#search-results-container")
-                .then(() => {
-                    console.log("New DOM data loaded in the container.");
-                    scrollDown();
-                })
-                .catch(error => console.error(error.message));
-            return true;
-        } else {
-            console.log("No next page button found or it is disabled.");
-            return false;
-        }
+            const nextPageButton = document.querySelector(".artdeco-pagination__button--next:not([disabled])");
+            if (nextPageButton) {
+                nextPageButton.click();
+                chrome.runtime.sendMessage({
+                    action: "wait_for_dom_changes",
+                    elementSelector: container_selector,
+                    timeout: 5000
+                }, response => {
+                    if (response.success) {
+                        console.log("DOM changes detected:", response.data);
+                    } else {
+                        console.error("Error waiting for DOM changes:", response.error);
+                    }
+                });
+                return true;
+            } else {
+                console.log("No next page button found or it is disabled.");
+                return false;
+            }
     }
   
 // Simplified scrollDown logic
