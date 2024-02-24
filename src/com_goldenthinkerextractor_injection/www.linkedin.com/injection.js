@@ -1,4 +1,3 @@
-import { container } from "webpack";
 
 async function mainScript() {
   
@@ -96,22 +95,44 @@ async function mainScript() {
     }
 
 
+    // Wrap sendMessage in a function that returns a Promise
+    async function waitForDomChangesAsync(elementSelector, timeout) {
+        return new Promise((resolve, reject) => {
+            chrome.runtime.sendMessage({
+                action: "wait_for_dom_changes",
+                elementSelector: elementSelector,
+                timeout: timeout
+            }, response => {
+                if (response.success) {
+                    resolve(response.message); // Resolve the promise with the success message
+                } else {
+                    reject(new Error(response.error)); // Reject the promise with the received error
+                }
+            });
+        });
+    }
+
+
+    // Use the function in an async context
+    async function checkForDomChanges() {
+        try {
+            const message = await waitForDomChangesAsync("#search-results-container", 5000);
+            console.log("DOM changes detected:", message);
+            // Proceed with your logic here after DOM changes are detected
+        } catch (error) {
+            console.error("Error waiting for DOM changes:", error.message);
+        }
+    }
+
+
+
+
+
     // click Next
     async function navigateToNextPage() {
             const nextPageButton = document.querySelector(".artdeco-pagination__button--next:not([disabled])");
             if (nextPageButton) {
                 nextPageButton.click();
-                chrome.runtime.sendMessage({
-                    action: "wait_for_dom_changes",
-                    elementSelector: container_selector,
-                    timeout: 5000
-                }, response => {
-                    if (response.success) {
-                        console.log("DOM changes detected:", response.data);
-                    } else {
-                        console.error("Error waiting for DOM changes:", response.error);
-                    }
-                });
                 return true;
             } else {
                 console.log("No next page button found or it is disabled.");
@@ -131,7 +152,7 @@ async function scrollDown() {
     do {
         container.scrollBy(0, 1000); // Adjust scroll step size as needed
         try {
-            await waitForDomChanges("#search-results-container", 5000); // Adjust timeout as needed
+            //await checkForDomChanges();
             console.log("DOM changes detected, attempting to extract data...");
             const results = await extractDataFromPage();
             if (results.length > 0) {

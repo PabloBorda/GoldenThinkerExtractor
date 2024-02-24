@@ -15,6 +15,7 @@ async function mainScript() {
                 tabId: currentTab.id // Include the current tab's ID in the message
             }, function(response) {
                 console.log("Response from background:", response);
+                return true;
             });
         }
     });

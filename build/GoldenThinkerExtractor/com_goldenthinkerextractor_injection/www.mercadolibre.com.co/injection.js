@@ -126,11 +126,11 @@ function extractProductDetails() {
 
 
 
-function closeCurrentAndActivatePreviousTab(currentTabId, previousTabId) {
+function closeCurrentAndActivatePreviousTab(currentcurrent_tab_id, previouscurrent_tab_id) {
   // Close the current tab
-  chrome.tabs.remove(currentTabId, function() {
+  chrome.tabs.remove(currentcurrent_tab_id, function() {
       // Once the tab is closed, activate the previous tab
-      chrome.tabs.update(previousTabId, {active: true}, function(tab) {
+      chrome.tabs.update(previouscurrent_tab_id, {active: true}, function(tab) {
           // Optional: You might want to focus the window of the activated tab
           chrome.windows.update(tab.windowId, {focused: true});
       });
@@ -175,9 +175,9 @@ function extractLinks() {
 }
 function getAllLinksInCurrentTab(callback) {
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    const currentTabId = tabs[0].id;
+    const currentcurrent_tab_id = tabs[0].id;
     chrome.scripting.executeScript({
-      target: {tabId: currentTabId},
+      target: {current_tab_id: currentcurrent_tab_id},
       function: extractLinks
     }, (injectionResults) => {
       for (const frameResult of injectionResults) {
@@ -211,8 +211,8 @@ function hasBeenVisited(link) {
 async function visitor_link_tree(root_link){
   active_tab_id = null;
   chrome.runtime.sendMessage({action: "get_active_tab"}, function(response) {
-    active_tab_id = response.tabId;
-    console.log("Active tab ID:", response.tabId);
+    active_tab_id = response.current_tab_id;
+    console.log("Active tab ID:", response.current_tab_id);
   });
   if (processUrl(root_link).type==="product_page"){
     products.push(extractProductDetails());

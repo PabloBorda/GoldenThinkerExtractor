@@ -1,311 +1,140 @@
 /******/ (() => { // webpackBootstrap
 var __webpack_exports__ = {};
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-// CORS: 'sha256-3woF8BZ54TeXM+czaH3aXoaJsVpiamuAKFsXDykAR/Q='
-
-function attach_event_listeners() {
-  // Start Button - execute injection script
-  document.getElementById("startButton").addEventListener("click", function () {
-    var button = this;
-    chrome.tabs.query({
-      active: true,
-      currentWindow: true
-    }, function (tabs) {
-      var activeTab = tabs[0];
-      console.log("Sending 'start_script' message to background script");
-      chrome.runtime.sendMessage({
-        action: "start_script",
-        tabId: activeTab.id
-      }, function (response) {
-        if (chrome.runtime.lastError) {
-          console.error("Error sending message:", chrome.runtime.lastError.message);
-          return;
-        }
-        if (response.status === "success") {
-          console.log("Script injection worked.");
-          button.innerHTML = "Stop";
-          // Handle UI changes or further actions
-        } else if (response.status === "error") {
-          console.error("Script failed to inject:", response.message);
-          // Handle error
-        }
-      });
-    });
-  });
-
-  // Download button listener
-  document.getElementById("downloadButton").addEventListener("click", function () {
-    console.log("downloading...");
-    var filenameInput = document.getElementById("filename");
-    var filename = filenameInput.value.trim() || "download"; // Use a default filename if none is provided
-
-    chrome.storage.local.get(["globalResultsArray"], function (data) {
-      if (data.globalResultsArray) {
-        var jsonString = JSON.stringify(data.globalResultsArray, null, 2);
-        var blob = new Blob([jsonString], {
-          type: "application/json"
-        });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = "".concat(filename, ".json"); // Use the user-specified filename
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } else {
-        console.log("No data to download.");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : String(i); }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+console.log("content.js script successfully injected from the static manifest.json");
+var UserSimulator = /*#__PURE__*/(/* unused pure expression or super */ null && (function () {
+  function UserSimulator() {
+    _classCallCheck(this, UserSimulator);
+  }
+  _createClass(UserSimulator, [{
+    key: "simulate_user_typing",
+    value: function simulate_user_typing(selector, value) {
+      var maxDelayMs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
+      var input = document.querySelector(selector);
+      if (!input) {
+        console.error('Input field not found');
+        return;
       }
-    });
-  });
+      input.focus();
+      var chars = value.split('');
+      var typingPromise = Promise.resolve(); // Start with a resolved promise
 
-  // Clear selectors from cookies and text area
-  document.getElementById("clearButton").addEventListener("click", function () {
-    console.log("clear");
-    chrome.storage.local.clear(function () {
-      var error = chrome.runtime.lastError;
-      if (error) {
-        console.error(error);
-      } else {
-        console.log('Data cleared from chrome.storage.local');
-      }
-    });
-  });
+      chars.forEach(function (_char) {
+        typingPromise = typingPromise.then(function () {
+          return new Promise(function (resolve) {
+            setTimeout(function () {
+              // Create and dispatch the keydown event
+              var keydownEvent = new KeyboardEvent('keydown', {
+                key: _char,
+                code: "Key".concat(_char.toUpperCase()),
+                bubbles: true
+              });
+              input.dispatchEvent(keydownEvent);
+              input.value += _char; // Add character to input value
 
-  // Add selector button
-  document.getElementById("addElementButton").addEventListener("click", function () {
-    var nameInput = document.getElementById("elementName");
-    var selectorInput = document.getElementById("elementSelector");
-    var name = nameInput.value.trim();
-    var selector = selectorInput.value.trim();
-    if (name && selector) {
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, function (tabs) {
-        var currentTabId = tabs[0].id.toString(); // Convert tab ID to string for use as a key
-        var newElement = {
-          name: name,
-          selector: selector
-        };
+              // Create and dispatch the keyup event
+              var keyupEvent = new KeyboardEvent('keyup', {
+                key: _char,
+                code: "Key".concat(_char.toUpperCase()),
+                bubbles: true
+              });
+              input.dispatchEvent(keyupEvent);
 
-        // Retrieve the current list of selectors for the tab, add the new one, and save it back
-        chrome.storage.local.get([currentTabId], function (result) {
-          var currentSelectors = result[currentTabId] ? result[currentTabId] : [];
-          currentSelectors.push(newElement);
-          var storageObject = {};
-          storageObject[currentTabId] = currentSelectors;
-          chrome.storage.local.set(storageObject, function () {
-            console.log('Selector saved for tab ID:', currentTabId);
-            // Clear inputs and refresh the list of selectors
-            nameInput.value = '';
-            selectorInput.value = '';
-            loadSelectorsForCurrentTab();
+              // Trigger input event after keyup to simulate the input change
+              var event = new Event('input', {
+                bubbles: true
+              });
+              input.dispatchEvent(event);
+              resolve(); // Resolve the promise to allow the next iteration
+            }, Math.random() * maxDelayMs);
           });
         });
       });
-    } else {
-      alert("Please fill in both name and selector fields.");
     }
-  });
-
-  // execute macro button
-  document.getElementById("apply_macro_button").addEventListener("click", function () {
-    var textareaData = document.getElementById("json_elements").value;
-    // Query the current active tab in the current window
-    chrome.tabs.query({
-      active: true,
-      currentWindow: true
-    }, function (tabs) {
-      var currentTab = tabs[0];
-      if (currentTab) {
-        // Send a message to your background script with the current tab's ID
-        chrome.runtime.sendMessage({
-          action: "apply_macro_button_message",
-          data: textareaData,
-          tabId: currentTab.id // Include the current tab's ID in the message
-        }, function (response) {
-          console.log("Response from background:", response);
-        });
-      }
+  }, {
+    key: "listen_mouse_movement",
+    value: function listen_mouse_movement() {
+      document.addEventListener('mousemove', function (event) {
+        var x = event.clientX; // Get the horizontal coordinate
+        var y = event.clientY; // Get the vertical coordinate
+        console.log("Mouse position: X=".concat(x, ", Y=").concat(y));
+      });
+    }
+  }]);
+  return UserSimulator;
+}()));
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.action === "simulate_user_typing") {
+    // Implement keyboard simulation logic here
+    console.log("execute: simulate_user_typing");
+    user_simulator.simulate_user_typing(message.target, message.text);
+    sendResponse({
+      success: true,
+      message: "Typing simulation complete"
     });
-  });
-}
-function loadSelectorsForCurrentTab() {
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true
-  }, function (tabs) {
-    var currentTabId = tabs[0].id.toString();
-    chrome.storage.local.get([currentTabId], function (result) {
-      var selectors = result[currentTabId] ? result[currentTabId] : [];
-      var elementsList = document.getElementById("elementsList");
-      elementsList.innerHTML = ''; // Clear existing list
+  } else if (message.action === "listen_mouse_movement") {
+    // Implement mouse simulation logic here
+    user_simulator.listen_mouse_movement(message.eventType, message.options);
+    sendResponse({
+      success: true,
+      message: "Typing simulation complete"
+    });
+  }
+  return true;
+});
 
-      selectors.forEach(function (element, index) {
-        var elementItem = document.createElement("div");
-        elementItem.className = "element-item";
-        elementItem.innerHTML = "<td>".concat(element.name, ": ").concat(element.selector, "</td><td></td><td></td><td><button class=\"removeElementButton\" data-index=\"").concat(index, "\">X</button></td>");
-        elementsList.appendChild(elementItem);
+// wait_for_dom_changes
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  function waitForDomChanges() {
+    var elementSelector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';
+    var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10000;
+    return new Promise(function (resolve, reject) {
+      var observer = new MutationObserver(function (mutations, obs) {
+        resolve();
+        obs.disconnect(); // Stop observing after changes are detected
+      });
+      var elem = document.querySelector(elementSelector);
+      if (!elem) {
+        reject(new Error("Element ".concat(elementSelector, " not found")));
+        return;
+      }
+      observer.observe(elem, {
+        childList: true,
+        // observe direct children
+        subtree: true,
+        // and lower descendants too
+        attributes: false,
+        // do not listen to attribute changes
+        characterData: false // do not listen to text content changes
+      });
 
-        // Add remove functionality
-        elementItem.querySelector(".removeElementButton").addEventListener("click", function () {
-          removeSelectorFromCurrentTab(index);
-        });
+      // Optional: Reject the promise if no changes are observed within the timeout period
+      setTimeout(function () {
+        observer.disconnect();
+        reject(new Error('Timeout waiting for DOM changes'));
+      }, timeout);
+    });
+  }
+  if (message.action === "wait_for_dom_changes") {
+    // Define the function outside or just use it directly if not needed elsewhere
+    waitForDomChanges(message.elementSelector, message.timeout).then(function () {
+      sendResponse({
+        success: true,
+        message: "DOM changes detected"
+      });
+    })["catch"](function (error) {
+      sendResponse({
+        success: false,
+        error: error.message
       });
     });
-  });
-}
-function removeSelectorFromCurrentTab(index) {
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true
-  }, function (tabs) {
-    var currentTabId = tabs[0].id.toString();
-    chrome.storage.local.get([currentTabId], function (result) {
-      var selectors = result[currentTabId];
-      if (selectors) {
-        selectors.splice(index, 1); // Remove the selector at the specified index
-        var storageObject = {};
-        storageObject[currentTabId] = selectors;
-        chrome.storage.local.set(storageObject, function () {
-          console.log('Selector removed for tab ID:', currentTabId);
-          loadSelectorsForCurrentTab(); // Refresh the list of selectors
-        });
-      }
-    });
-  });
-}
-
-// open tab from popup.html
-function openTab(evt, tabName) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
+    return true; // Indicate an asynchronous response
   }
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-  var targetTab = document.getElementById(tabName);
-  if (targetTab) {
-    targetTab.style.display = "block";
-    evt.currentTarget.className += " active";
-  } else {
-    console.error("Tab not found: ", tabName);
-  }
-}
-
-// Selector Parameters
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOMContentLoaded");
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true
-  }, function (tabs) {
-    var url = new URL(tabs[0].url);
-    var domain = url.hostname;
-    document.getElementById("domainName").textContent = domain;
-  });
-  attach_event_listeners();
-  loadSelectorsForCurrentTab(); // Load selectors for the current tab
-
-  var tablinks = document.getElementsByClassName("tablinks");
-  for (var i = 0; i < tablinks.length; i++) {
-    tablinks[i].addEventListener('click', function (event) {
-      var tabName = this.getAttribute('data-tab');
-      openTab(event, tabName);
-    });
-
-    // Automatically open the first tab or a specific tab
-    if (tablinks.length > 0) {
-      tablinks[0].click();
-    }
-  }
-  function getFaviconUrl(url) {
-    // Assuming favicon is at the root directory as a fallback
-    var faviconUrl = "".concat(url.protocol, "//").concat(url.hostname, "/favicon.ico");
-
-    // Attempt to fetch the favicon specified in the page's link element
-    function findFaviconInDocument() {
-      var link = document.querySelector("link[rel~='icon']");
-      if (link) {
-        return link.href;
-      }
-      return '';
-    }
-    chrome.scripting.executeScript({
-      target: {
-        tabId: url.id
-      },
-      "function": findFaviconInDocument
-    }, function (injectionResults) {
-      var _iterator = _createForOfIteratorHelper(injectionResults),
-        _step;
-      try {
-        for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var frameResult = _step.value;
-          if (frameResult.result && frameResult.result !== '') {
-            faviconUrl = frameResult.result;
-            break;
-          }
-        }
-      } catch (err) {
-        _iterator.e(err);
-      } finally {
-        _iterator.f();
-      }
-      document.getElementById('target_favicon').src = faviconUrl;
-    });
-    return faviconUrl; // This will return the default favicon path or the updated one if found
-  }
-
-  // Fetch and display the favicon and domain
-  chrome.tabs.query({
-    active: true,
-    currentWindow: true
-  }, function (tabs) {
-    var url = new URL(tabs[0].url);
-    document.getElementById("domainName").textContent = url.hostname;
-    document.getElementById('target_favicon').src = "".concat(url.protocol, "//").concat(url.host, "/favicon.ico");
-  });
-});
-document.addEventListener('DOMContentLoaded', function () {
-  var textarea = document.getElementById('json_elements');
-  var applyButton = document.getElementById('apply_macro_button');
-  var messageDiv = document.getElementById('validation_message');
-  function validateAndEnableButton(jsonText) {
-    try {
-      var jsonData = JSON.parse(jsonText);
-      if (Array.isArray(jsonData)) {
-        // JSON is valid and is an array
-        applyButton.disabled = false; // Enable the button
-        messageDiv.innerHTML = '<span style="color: green;">✔ JSON data is correct</span>';
-      } else {
-        // JSON is valid but not an array
-        applyButton.disabled = true; // Keep the button disabled
-        messageDiv.innerHTML = '<span style="color: red;">✘ JSON array is not valid</span>';
-      }
-    } catch (error) {
-      // JSON is invalid
-      applyButton.disabled = true; // Keep the button disabled
-      messageDiv.innerHTML = '<span style="color: red;">✘ JSON array is not valid</span>';
-    }
-  }
-  textarea.addEventListener('input', function () {
-    var text = textarea.value.trim();
-    textarea.value = text;
-    console.log(text);
-    if (text) {
-      validateAndEnableButton(text);
-    } else {
-      applyButton.disabled = true; // Keep the button disabled if textarea is empty
-      messageDiv.innerHTML = ''; // Clear the message
-    }
-  });
 });
 /******/ })()
 ;

@@ -10,28 +10,28 @@ content.js
 
 function attach_event_listeners(){
   // Save selectors to cookies
-  console.log("Attaching event listener to start/stop_script button");
+  console.log("Attaching event listener to start/stop_web_crawl_message button");
 
-  const startstop_scriptButton = document.getElementById("startButton");
+  const startstop_web_crawl_messageButton = document.getElementById("startButton");
   
-  startstop_scriptButton.addEventListener("click", function() {
+  startstop_web_crawl_messageButton.addEventListener("click", function() {
       if (this.innerHTML === "Start") {
         console.log("Start button clicked");
         this.style.backgroundColor = "#f44336";
-        this.innerHTML = "stop_script";
+        this.innerHTML = "stop_web_crawl_message";
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-          console.log("Sending 'start_script' message to background script");
-          chrome.runtime.sendMessage({ action: "start_script", tab: tabs[0] }, function(response) {
+          console.log("Sending 'start_web_crawl_message' message to background script");
+          chrome.runtime.sendMessage({ action: "start_web_crawl_message", tab: tabs[0] }, function(response) {
             // Close the popup window after sending the message
             window.close();
           });
         });
       } else {
-        console.log("stop_script button clicked");
+        console.log("stop_web_crawl_message button clicked");
         this.style.backgroundColor = ""; // Reset button color
         this.innerHTML = "Start";
-        console.log("Sending 'stop_script' message to background script");
-        chrome.runtime.sendMessage({ action: "stop_script", tab: tabs[0] }, function(response) {
+        console.log("Sending 'stop_web_crawl_message' message to background script");
+        chrome.runtime.sendMessage({ action: "stop_web_crawl_message", tab: tabs[0] }, function(response) {
           // Close the popup window after sending the message
           window.close();
         });
@@ -85,18 +85,18 @@ function attach_event_listeners(){
 
     if (name && selector) {
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            const currentTabId = tabs[0].id.toString(); // Convert tab ID to string for use as a key
+            const currentcurrent_tab_id = tabs[0].id.toString(); // Convert tab ID to string for use as a key
             const newElement = {name, selector};
 
             // Retrieve the current list of selectors for the tab, add the new one, and save it back
-            chrome.storage.local.get([currentTabId], function(result) {
-                const currentSelectors = result[currentTabId] ? result[currentTabId] : [];
+            chrome.storage.local.get([currentcurrent_tab_id], function(result) {
+                const currentSelectors = result[currentcurrent_tab_id] ? result[currentcurrent_tab_id] : [];
                 currentSelectors.push(newElement);
                 let storageObject = {};
-                storageObject[currentTabId] = currentSelectors;
+                storageObject[currentcurrent_tab_id] = currentSelectors;
 
                 chrome.storage.local.set(storageObject, function() {
-                    console.log('Selector saved for tab ID:', currentTabId);
+                    console.log('Selector saved for tab ID:', currentcurrent_tab_id);
                     // Clear inputs and refresh the list of selectors
                     nameInput.value = '';
                     selectorInput.value = '';
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
 
       chrome.scripting.executeScript({
-        target: {tabId: url.id},
+        target: {current_tab_id: url.id},
         function: findFaviconInDocument,
       }, (injectionResults) => {
         for (const frameResult of injectionResults)
@@ -177,9 +177,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function loadSelectorsForCurrentTab() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      const currentTabId = tabs[0].id.toString();
-      chrome.storage.local.get([currentTabId], function(result) {
-          const selectors = result[currentTabId] ? result[currentTabId] : [];
+      const currentcurrent_tab_id = tabs[0].id.toString();
+      chrome.storage.local.get([currentcurrent_tab_id], function(result) {
+          const selectors = result[currentcurrent_tab_id] ? result[currentcurrent_tab_id] : [];
           const elementsList = document.getElementById("elementsList");
           elementsList.innerHTML = ''; // Clear existing list
 
@@ -201,16 +201,16 @@ function loadSelectorsForCurrentTab() {
 
 function removeSelectorFromCurrentTab(index) {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      const currentTabId = tabs[0].id.toString();
-      chrome.storage.local.get([currentTabId], function(result) {
-          let selectors = result[currentTabId];
+      const currentcurrent_tab_id = tabs[0].id.toString();
+      chrome.storage.local.get([currentcurrent_tab_id], function(result) {
+          let selectors = result[currentcurrent_tab_id];
           if (selectors) {
               selectors.splice(index, 1); // Remove the selector at the specified index
               let storageObject = {};
-              storageObject[currentTabId] = selectors;
+              storageObject[currentcurrent_tab_id] = selectors;
 
               chrome.storage.local.set(storageObject, function() {
-                  console.log('Selector removed for tab ID:', currentTabId);
+                  console.log('Selector removed for tab ID:', currentcurrent_tab_id);
                   loadSelectorsForCurrentTab(); // Refresh the list of selectors
               });
           }
@@ -249,11 +249,11 @@ import { extractFiltersAndValues } from './com_goldenthinkerextractor_filters_fo
 
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-    if (message.action === "start_script") {
+    if (message.action === "start_web_crawl_message") {
         let tab = message.tab.id;
         try {
             await chrome.scripting.executeScript({
-                target: {tabId: tab},
+                target: {current_tab_id: tab},
                 function: mainScript
             });
             console.log("Script injected into tab " + tab);
@@ -262,7 +262,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             console.error("Error injecting script into tab " + tab, error);
             sendResponse({status: "error", message: error.message});
         }
-    } else if (message.action === "stop_script") {
+    } else if (message.action === "stop_web_crawl_message") {
         console.log("Script stopped.");
         // Implement stopping logic if necessary
         sendResponse({status: "stopped"});
@@ -623,7 +623,7 @@ module.exports = {
 User
 On the extension side , the error happens at:
 
-          chrome.runtime.sendMessage({ action: "start_script", tab: tabs[0] }, function(response) {
+          chrome.runtime.sendMessage({ action: "start_web_crawl_message", tab: tabs[0] }, function(response) {
             // Close the popup window after sending the message
             window.close();
           });`

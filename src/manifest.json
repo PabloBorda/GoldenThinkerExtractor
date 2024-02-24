@@ -25,12 +25,6 @@
     "https://www.goldenthinker.com/",
     "https://www.subjectivetechnologies.com/"
   ],
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
-  ],
   "background": {
     "service_worker": "background.js"
   },
