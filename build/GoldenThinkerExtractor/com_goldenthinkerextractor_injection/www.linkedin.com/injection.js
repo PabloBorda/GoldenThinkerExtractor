@@ -96,7 +96,7 @@ async function mainScript() {
 
 
     // Wrap sendMessage in a function that returns a Promise
-    function waitForDomChangesAsync(elementSelector, timeout) {
+    async function waitForDomChangesAsync(elementSelector, timeout) {
         return new Promise((resolve, reject) => {
             chrome.runtime.sendMessage({
                 action: "wait_for_dom_changes",
@@ -108,6 +108,7 @@ async function mainScript() {
                 } else {
                     reject(new Error(response.error)); // Reject the promise with the received error
                 }
+                return true;
             });
         });
     }
@@ -126,60 +127,44 @@ async function mainScript() {
 
 
 
-
-
-    // click Next
     async function navigateToNextPage() {
-            const nextPageButton = document.querySelector(".artdeco-pagination__button--next:not([disabled])");
-            if (nextPageButton) {
-                nextPageButton.click();
-                return true;
-            } else {
-                console.log("No next page button found or it is disabled.");
-                return false;
-            }
-    }
-  
-// Simplified scrollDown logic
-async function scrollDown() {
-    const container = await getContainer();
-    console.log("scrollDown called for:", container);
-
-    // Simplified logic to trigger a scroll and wait for changes
-    let attempts = 0;
-    const maxAttempts = 5; // Adjust based on your needs
-
-    do {
-        container.scrollBy(0, 1000); // Adjust scroll step size as needed
-        try {
+        const nextPageButton = document.querySelector(".artdeco-pagination__button--next:not([disabled])");
+        if (nextPageButton) {
+            nextPageButton.click();
             //await checkForDomChanges();
-            console.log("DOM changes detected, attempting to extract data...");
-            const results = await extractDataFromPage();
-            if (results.length > 0) {
-                await storeResultsLocally(results);
-                console.log("Data sent to server.");
-                attempts = 0; // Reset attempts if data was successfully processed
-            } else {
-                console.log("No new data found, increasing attempt count.");
-                attempts++;
-            }
-        } catch (error) {
-            console.error("Error waiting for DOM changes:", error.message);
-            attempts++;
-        }
-    } while (attempts < maxAttempts);
-
-    if (attempts >= maxAttempts) {
-        console.log("Max attempts reached, checking for next page...");
-        const nextPageSuccess = await navigateToNextPage();
-        if (nextPageSuccess) {
-            console.log("Navigated to next page, continuing data extraction...");
-            await scrollDown(); // Recursively call scrollDown for the next page
+            console.log("Next page loaded.");
+            return true;
         } else {
-            console.log("No further pages or unable to navigate, stopping script.");
+            console.log("No next page button found or it is disabled.");
+            return false;
         }
     }
-}
+    
+  
+    async function scrollDown() {
+        const container = await getContainer();
+        console.log("scrollDown called for:", container);
+    
+        // Wait for DOM changes after scrolling
+        
+        console.log("DOM changes detected, attempting to extract data...");
+    
+        const results = await extractDataFromPage();
+        if (results.length > 0) {
+            await storeResultsLocally(results);
+            console.log("Data sent to server.");
+            // Check if there's a next page and navigate
+            const nextPageExists = await navigateToNextPage();
+            if (nextPageExists) {
+                console.log("Navigating to next page...");
+                await scrollDown(); // Recursive call for the next page
+                await waitForDomChangesAsync("#search-results-container", 5000);
+            }
+        } else {
+            console.log("No new data found.");
+        }
+    }
+    
 
     
     console.log("mainScript() executing...");

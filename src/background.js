@@ -82,10 +82,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
 
-
-
-
-
 //apply_macro_button_message
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (message.action === "apply_macro_button_message") {
@@ -143,7 +139,54 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
 
 
+  // wait_for_dom_changes
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
+    function waitForDomChanges(elementSelector = 'body', timeout = 10000) {
+      return new Promise((resolve, reject) => {
+        const observer = new MutationObserver((mutations, obs) => {
+          resolve();
+          obs.disconnect(); // Stop observing after changes are detected
+        });
+    
+        const elem = document.querySelector(elementSelector);
+        if (!elem) {
+          reject(new Error(`Element ${elementSelector} not found`));
+          return;
+        }
+    
+        observer.observe(elem, {
+          childList: true, // observe direct children
+          subtree: true, // and lower descendants too
+          attributes: false, // do not listen to attribute changes
+          characterData: false, // do not listen to text content changes
+        });
+    
+        // Optional: Reject the promise if no changes are observed within the timeout period
+        setTimeout(() => {
+          observer.disconnect();
+          reject(new Error('Timeout waiting for DOM changes'));
+        }, timeout);
+      });
+    }
+  
+    if (message.action === "wait_for_dom_changes") {
+      // Define the function outside or just use it directly if not needed elsewhere
+      waitForDomChanges(message.elementSelector, message.timeout)
+        .then(() => {
+          sendResponse({success: true, message: "DOM changes detected"});
+        })
+        .catch(error => {
+          sendResponse({success: false, error: error.message});
+        });
+      return true; // Indicate an asynchronous response
+    }
+  });
+
+
+
+
+  
 //delay
 async function delay(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));

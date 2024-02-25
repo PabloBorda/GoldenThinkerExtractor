@@ -87,55 +87,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
   return true;
 });
-
-// wait_for_dom_changes
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  function waitForDomChanges() {
-    var elementSelector = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';
-    var timeout = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10000;
-    return new Promise(function (resolve, reject) {
-      var observer = new MutationObserver(function (mutations, obs) {
-        resolve();
-        obs.disconnect(); // Stop observing after changes are detected
-      });
-      var elem = document.querySelector(elementSelector);
-      if (!elem) {
-        reject(new Error("Element ".concat(elementSelector, " not found")));
-        return;
-      }
-      observer.observe(elem, {
-        childList: true,
-        // observe direct children
-        subtree: true,
-        // and lower descendants too
-        attributes: false,
-        // do not listen to attribute changes
-        characterData: false // do not listen to text content changes
-      });
-
-      // Optional: Reject the promise if no changes are observed within the timeout period
-      setTimeout(function () {
-        observer.disconnect();
-        reject(new Error('Timeout waiting for DOM changes'));
-      }, timeout);
-    });
-  }
-  if (message.action === "wait_for_dom_changes") {
-    // Define the function outside or just use it directly if not needed elsewhere
-    waitForDomChanges(message.elementSelector, message.timeout).then(function () {
-      sendResponse({
-        success: true,
-        message: "DOM changes detected"
-      });
-    })["catch"](function (error) {
-      sendResponse({
-        success: false,
-        error: error.message
-      });
-    });
-    return true; // Indicate an asynchronous response
-  }
-});
 /******/ })()
 ;
 //# sourceMappingURL=content.js.map
