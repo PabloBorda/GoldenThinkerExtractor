@@ -108,6 +108,38 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
+// close_current_tab
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.action === "close_current_tab") {
+    // Check if sender.tab.id is available to ensure the message comes from a content script within a tab
+    if (sender.tab && sender.tab.id) {
+      chrome.tabs.remove(sender.tab.id, function () {
+        // Check for any error that might have occurred during tab removal
+        if (chrome.runtime.lastError) {
+          console.error("Error closing tab:", chrome.runtime.lastError.message);
+          sendResponse({
+            status: "error",
+            message: chrome.runtime.lastError.message
+          });
+        } else {
+          console.log("Tab closed successfully");
+          sendResponse({
+            status: "success",
+            message: "Tab closed successfully"
+          });
+        }
+      });
+    } else {
+      console.error("Tab ID not found or message not sent from a tab.");
+      sendResponse({
+        status: "error",
+        message: "Tab ID not found or message not sent from a tab."
+      });
+    }
+    return true; // Indicates that you wish to send a response asynchronously
+  }
+});
+
 //apply_macro_button_message
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === "apply_macro_button_message") {

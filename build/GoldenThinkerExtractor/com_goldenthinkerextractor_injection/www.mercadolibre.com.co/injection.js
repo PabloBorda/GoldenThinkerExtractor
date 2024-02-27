@@ -205,37 +205,104 @@ function hasBeenVisited(link) {
 }
 
 
+async function visitor_link_tree(links, index = 0, parentTabId = null) {
+  if (index >= links.length) {
+      console.log("Finished processing all links.");
+      // Close the parent tab if it exists and we're done processing its children
+      if (parentTabId) {
+          await close_tab(parentTabId);
+      }
+      return;
+  }
 
+  const link = links[index];
+  console.log("Processing link:", link);
 
-
-async function visitor_link_tree(root_link){
-  active_tab_id = null;
-  chrome.runtime.sendMessage({action: "get_active_tab"}, function(response) {
-    active_tab_id = response.current_tab_id;
-    console.log("Active tab ID:", response.current_tab_id);
-  });
-  if (processUrl(root_link).type==="product_page"){
-    products.push(extractProductDetails());
+  const linkType = processUrl(link);
+  if (linkType.type === "product_page") {
+      console.log("Extracting product details from", link);
+      // Assuming extractProductDetails is an async function or returns a promise
+      const productDetails = await extractProductDetails(link);
+      products.push(productDetails);
+      console.log("Product details extracted:", productDetails);
+      // Continue with the next link after a delay to respect rate limits
+      setTimeout(() => visitor_link_tree(links, index + 1, parentTabId), 1000); // Adjust delay as needed
+  } else if (linkType.type === "category_page") {
+      console.log("Opening category page:", link);
+      // Open the category page in a new tab and wait for it to be processed
+      const newTabId = await open_tab(link);
+      // Extract links from the opened category page
+      const childLinks = await extractLinks(newTabId); // Ensure this is adapted to work asynchronously
+      // Process child links, then close the tab and move to the next link
+      await visitor_link_tree(childLinks, 0, newTabId);
+      visitor_link_tree(links, index + 1, parentTabId);
   } else {
-    links_to_crawl = extractLinks();
-    links_to_crawl.forEach(function(link){
-      chrome.runtime.sendMessage({action: "open_new_tab"},function(response){
-        if (response.status==="tab_was_opened"){
-          let link_type = processUrl(link);
-          if (link_type==="category_page"){
-            children = extractLinks();
-            children.forEach(async function(child){
-              await visitor_link_tree(link);
-            });            
-          }
-        }
-      });
-    });
+      console.log("Skipping link:", link);
+      visitor_link_tree(links, index + 1, parentTabId);
   }
 }
 
+async function open_tab(url) {
+  return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({action: "open_new_tab", url: url}, function(response) {
+          if (response.status === "tab_was_opened") {
+              console.log("Tab was opened:", url);
+              resolve(response.new_tab_id); // Ensure your background script sends back the new tab ID
+          } else {
+              reject(new Error("Failed to open tab"));
+          }
+      });
+  });
+}
 
-await visitor_link_tree("https://www.mercadolibre.com.co/categorias#menu=categories");
+async function close_tab(tabId) {
+  return new Promise((resolve) => {
+      chrome.runtime.sendMessage({action: "close_current_tab", tabId: tabId}, function(response) {
+          if (response.status === "success") {
+              console.log("Tab closed successfully:", tabId);
+              resolve();
+          } else {
+              console.error("Failed to close tab:", tabId);
+              resolve(); // Resolve anyway to continue the process
+          }
+      });
+  });
+}
+
+async function extractLinks(tabId) {
+  return new Promise((resolve, reject) => {
+      try {
+          chrome.scripting.executeScript({
+              target: {tabId: tabId},
+              function: () => {
+                  // This function is executed in the context of the webpage loaded in the tab.
+                  const links = Array.from(document.querySelectorAll('a')).map(a => a.href);
+                  return links;
+              },
+          }, (injectionResults) => {
+              // Check for errors
+              if (chrome.runtime.lastError || !injectionResults || injectionResults.length === 0) {
+                  reject(new Error('Failed to execute script or no results returned.'));
+                  return;
+              }
+              
+              // Assuming the script was injected and executed successfully
+              const extractedLinks = injectionResults[0].result;
+              if (extractedLinks) {
+                  resolve(extractedLinks);
+              } else {
+                  reject(new Error('No links extracted.'));
+              }
+          });
+      } catch (error) {
+          reject(error);
+      }
+  });
+}
 
 
 
+// Start the process with the root link
+const rootLink = "https://www.mercadolibre.com.co/categorias#menu=categories";
+const initialLinks = [rootLink]; // This would be your starting set of links
+visitor_link_tree(initialLinks);

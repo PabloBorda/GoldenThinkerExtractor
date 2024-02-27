@@ -174,7 +174,7 @@ function removeSelectorFromCurrentTab(index) {
 
 
 // open tab from popup.html
-function openTab(evt, tabName) {
+function open_tab(evt, tabName) {
   var i,tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
   for (i = 0; i < tabcontent.length; i++) {
@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", function() {
   for (let i = 0; i < tablinks.length; i++) {
       tablinks[i].addEventListener('click', function(event) {
           var tabName = this.getAttribute('data-tab');
-          openTab(event,tabName);
+          open_tab(event,tabName);
       });
 
       // Automatically open the first tab or a specific tab
