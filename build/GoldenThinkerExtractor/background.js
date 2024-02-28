@@ -255,6 +255,43 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   }
 });
 
+// In background.js
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.action === "open_new_tab_and_extract_links") {
+    chrome.tabs.create({
+      url: message.url,
+      active: false
+    }, function (tab) {
+      chrome.scripting.executeScript({
+        target: {
+          tabId: tab.id
+        },
+        "function": function _function() {
+          console.log("Injecting extractLinks function script");
+          var links = Array.from(document.querySelectorAll('a')).map(function (a) {
+            return a.href;
+          });
+          console.log("The links extracted are: " + JSON.stringify());
+          return links;
+        }
+      }, function (results) {
+        if (results && results[0] && results[0].result) {
+          sendResponse({
+            links: results[0].result
+          });
+        } else {
+          sendResponse({
+            error: "Failed to extract links"
+          });
+        }
+        // Close the tab after extracting the links
+        chrome.tabs.remove(tab.id);
+      });
+    });
+    return true; // Indicates an asynchronous response.
+  }
+});
+
 //delay
 function delay(_x) {
   return _delay.apply(this, arguments);

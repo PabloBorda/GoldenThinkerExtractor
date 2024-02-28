@@ -1,0 +1,38 @@
+/* function extractCategoriesAndSubcategories() {
+    let categories = [];
+    const categoryTitles = document.querySelectorAll('h2.categories__title[itemprop="name"]');
+
+    categoryTitles.forEach((categoryTitle) => {
+        const categoryName = categoryTitle.textContent.trim();
+        const categoryLink = categoryTitle.querySelector('a').getAttribute('href');
+        let subcategories = [];
+
+        let subcategoryList = categoryTitle.nextElementSibling;
+        if (subcategoryList && subcategoryList.tagName === 'UL') {
+            const subcategoryItems = subcategoryList.querySelectorAll('li.categories__item[itemprop="name"]');
+            subcategoryItems.forEach((item) => {
+                const subcategoryName = item.querySelector('h3').textContent.trim();
+                const subcategoryLink = item.querySelector('a').getAttribute('href');
+                subcategories.push({ "subcategory_name": subcategoryName, "link": subcategoryLink });
+            });
+        }
+
+        categories.push({ "category_name": categoryName, "link": categoryLink, "subcategories": subcategories });
+    });
+
+    return categories;
+}
+ */
+
+/* function closeCurrentAndActivatePreviousTab(currentcurrent_tab_id, previouscurrent_tab_id) {
+  // Close the current tab
+  chrome.tabs.remove(currentcurrent_tab_id, function() {
+      // Once the tab is closed, activate the previous tab
+      chrome.tabs.update(previouscurrent_tab_id, {active: true}, function(tab) {
+          // Optional: You might want to focus the window of the activated tab
+          chrome.windows.update(tab.windowId, {focused: true});
+      });
+  });
+}
+ */
+
