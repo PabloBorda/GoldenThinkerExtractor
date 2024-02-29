@@ -1,6 +1,7 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const WebpackShellPluginNext = require('webpack-shell-plugin-next');
 
 module.exports = {
   mode: 'production',
@@ -46,13 +47,20 @@ module.exports = {
         { from: 'src/com_goldenthinkerextractor_injection', to: 'com_goldenthinkerextractor_injection'}
       ],
     }),
-    new CleanWebpackPlugin()
+    new CleanWebpackPlugin(),
+    new WebpackShellPluginNext({
+      onBuildEnd: {
+        scripts: ['python3.11.exe .\\source_code_snapshot.py'],
+        blocking: false,
+        parallel: true
+      }
+    })
   ],
   optimization: {
     minimize: false // Disable minification
   },
   devServer: {
-    contentBase: './GoldenThinkerExtractor',
+    contentBase: './build',
     open: true,
   },
   devtool: 'source-map'

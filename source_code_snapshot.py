@@ -30,8 +30,8 @@ def write_json(data, output_filename):
         json.dump(data, json_file, indent=4, ensure_ascii=False)
 
 if __name__ == "__main__":
-    directory_path = input("Enter the path to scan: ")
-    output_file = "output.json"
+    directory_path = '.'
+    output_file = "snapshot.json"
     tree_structure = scan_files(directory_path)
     write_json(tree_structure, output_file)
     print(f"Directory structure and file contents have been written to {output_file}")
