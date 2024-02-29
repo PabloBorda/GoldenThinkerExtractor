@@ -211,34 +211,39 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 
-  
 
-// In background.js
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+
+//open_new_tab_and_extract_links
+/* chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "open_new_tab_and_extract_links") {
-      chrome.tabs.create({ url: message.url, active: false }, function(tab) {
+    chrome.tabs.create({ url: message.url, active: false }, (tab) => {
+      const checkTabLoaded = (tabId, changeInfo) => {
+        if (tabId === tab.id && changeInfo.status === "complete") {
+          chrome.tabs.onUpdated.removeListener(checkTabLoaded);
           chrome.scripting.executeScript({
-              target: { tabId: tab.id },
-              function: () => {
-                  console.log("Injecting extractLinks function script");
-                  let links = Array.from(document.querySelectorAll('a')).map(a => a.href);
-                  console.log("The links extracted are: "+JSON.stringify());
-                  return links;
-              },
-          }, (results) => {
-              if (results && results[0] && results[0].result) {
-                  sendResponse({ links: results[0].result });
-              } else {
-                  sendResponse({ error: "Failed to extract links" });
-              }
-              // Close the tab after extracting the links
-              chrome.tabs.remove(tab.id);
+            target: { tabId: tab.id },
+            files: ['com_goldenthinkerextractor_injection/' + domain + '/link_extractor.js']
+          }, (injectionResults) => {
+            // Handle results, e.g., sendResponse with extracted links
+            chrome.tabs.remove(tab.id); // Close the tab after processing
           });
-      });
-      return true; // Indicates an asynchronous response.
+        }
+      };
+      chrome.tabs.onUpdated.addListener(checkTabLoaded);
+    });
+    return true; // Keep the message channel open for asynchronous response
+  }
+}); */
+
+
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "extracted_links") {
+      console.log("Links received in background script: ", message.links);
+      // Process the links as needed
+      sendResponse({status: "Links processed"});
   }
 });
-
 
 
 

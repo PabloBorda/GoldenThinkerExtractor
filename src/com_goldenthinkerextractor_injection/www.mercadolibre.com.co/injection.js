@@ -171,7 +171,7 @@ async function close_tab() {
 
 
 // Extract links
-function extractLinks(url) {
+/* function extractLinks(url) {
     return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage({
             action: "open_new_tab_and_extract_links",
@@ -184,55 +184,61 @@ function extractLinks(url) {
             }
         });
     });
-} 
+}  */
 
-/* function extractLinks(url){
+async function extractLinks(url){
     return Array.from(document.querySelectorAll('a')).map(a => a.href);
 }
- */
+
 
 
 
 // visitor recursive function
 async function visitor_link_tree(links, index = 0, parentTabId = null) {
-    if (index >= links.length) {
-        console.log("Finished processing all links.");
-        // Close the parent tab if it exists and we're done processing its children
-        if (parentTabId) {
-            await close_tab(parentTabId);
-        }
-        return;
-    }
-    const link = links[index];
-    console.log("Processing link:", link);
-    const linkType = processUrl(link);
-    if (linkType.type === "product_page") {
-        console.log("Extracting product details from", link);
-        // Assuming extractProductDetails is an async function or returns a promise
-        const productDetails = await extractProductDetails(link);
-        products.push(productDetails);
-        console.log("Product details extracted:", productDetails);
-        // Continue with the next link after a delay to respect rate limits
-        setTimeout(() => visitor_link_tree(links, index + 1, parentTabId), 1000); // Adjust delay as needed
-    } else if (linkType.type === "category_page") {
-        console.log("Processing category page:", link);
-        // Adjusted to directly use extractLinks without opening a new tab here
-        // Assuming link is the URL from which you want to extract links
-        try {
-            const childLinks = await extractLinks(link);
-            console.log("Extracted child links:", childLinks);
-            // Recursively process the extracted links before moving to the next main link
-            await visitor_link_tree(childLinks, 0, parentTabId);
-            // After processing child links, move to the next link in the current level
-            visitor_link_tree(links, index + 1, parentTabId);
-        } catch (error) {
-            console.error("Error extracting links from category page:", error);
-            // Move to the next link even if there was an error
-            visitor_link_tree(links, index + 1, parentTabId);
+    if (links.length>0){
+        if (index >= links.length) {
+            console.log("Finished processing all links.");
+            // Close the parent tab if it exists and we're done processing its children
+            if (parentTabId) {
+                await close_tab(parentTabId);
+            }
+            return;
+        } else {            
+            // Send a message to the background script to open a new tab with the specified URL
+            chrome.runtime.sendMessage({
+                action: "open_new_tab",
+                url: links[index]
+            }, async response => {
+                if (response.status === "tab_was_opened") {
+                    console.log("New tab was opened successfully:", response.message);
+                    const link = links[index];
+                    console.log("Processing link:", link);
+                    const linkType = processUrl(link);
+                    if (linkType.type === "product_page") {
+                        console.log("Extracting product details from", link);
+                        // Assuming extractProductDetails is an async function or returns a promise
+                        const productDetails = await extractProductDetails(link);
+                        products.push(productDetails);
+                        console.log("Product details extracted:", productDetails);
+                        // Continue with the next link after a delay to respect rate limits
+                        setTimeout(() => visitor_link_tree(links, index + 1, parentTabId), 1000); // Adjust delay as needed
+                    } else if (linkType.type === "category_page") {
+                        console.log("Processing category page:", link);
+                        // Adjusted to directly use extractLinks without opening a new tab here
+                        // Assuming link is the URL from which you want to extract links
+                        const childLinks = await extractLinks(link);
+                        console.log("Extracted child links:", childLinks);
+                        // Recursively process the extracted links before moving to the next main link
+                        await visitor_link_tree(links, index + 1, parentTabId);
+                    } else {
+                        console.error("Failed to open new tab:", response.message);
+                    }
+                }
+
+            });
         }
     } else {
-        console.log("Skipping link:", link);
-        visitor_link_tree(links, index + 1, parentTabId);
+        console.log("No more links snanned...")
     }
 }
 
@@ -248,4 +254,4 @@ var products = [];
 // Start the process with the root link
 const rootLink = "https://www.mercadolibre.com.co/categorias#menu=categories";
 const initialLinks = [rootLink]; // This would be your starting set of links
-visitor_link_tree(initialLinks);
+visitor_link_tree(initialLinks,0,null);
