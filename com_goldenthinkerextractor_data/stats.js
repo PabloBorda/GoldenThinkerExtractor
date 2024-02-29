@@ -21,35 +21,43 @@ function formatSize(bytes) {
 
 // Function to count duplicates in an array of contacts
 function countDuplicates(data) {
-    const uniqueIds = new Set();
-    const duplicates = data.filter(contact => {
-        const uniqueId = `${contact.name}|${contact.company}|${contact.jobTitle}`;
-        return uniqueIds.has(uniqueId) ? true : uniqueIds.add(uniqueId);
+    const uniqueContacts = new Set();
+    let duplicatesCount = 0;
+
+    data.forEach(contact => {
+        // Adjust these properties based on your data structure
+        const compositeKey = `${contact.name}|${contact.company}|${contact.jobTitle}`;
+        if (uniqueContacts.has(compositeKey)) {
+            duplicatesCount++;
+        } else {
+            uniqueContacts.add(compositeKey);
+        }
     });
-    return duplicates.length;
+
+    return duplicatesCount;
 }
 
 
-// Function to read JSON files and update stats
+// Modified processFile function to use the updated duplicate counting logic
 function processFile(filePath) {
-    const content = fs.readFileSync(filePath);
+    const content = fs.readFileSync(filePath, 'utf8');
     const data = JSON.parse(content);
     const contactCount = Array.isArray(data) ? data.length : 0;
     const fileSize = fs.statSync(filePath).size; // Get file size in bytes
-    const duplicateCount = countDuplicates(data); // Count duplicates
+    const duplicateCount = countDuplicates(data); // Use the updated logic to count duplicates
 
     stats.totalContacts += contactCount;
     stats.totalSize += fileSize; // Update total size
     stats.totalDuplicates += duplicateCount; // Update total duplicates
-    stats.files[filePath] = { contactCount, fileSize, duplicateCount };
+    stats.files[filePath] = { contactCount, fileSize, duplicateCount: duplicateCount };
 
     const folderPath = path.dirname(filePath);
     if (!stats.folders[folderPath]) {
-        stats.folders[folderPath] = { contactCount, fileSize, duplicateCount };
+        stats.folders[folderPath] = { totalContacts: contactCount, totalFileSize: fileSize, totalDuplicateCount: duplicateCount };
     } else {
-        stats.folders[folderPath].contactCount += contactCount;
-        stats.folders[folderPath].fileSize += fileSize;
-        stats.folders[folderPath].duplicateCount += duplicateCount; // Update folder-level duplicates
+        stats.folders[folderPath].totalContacts += contactCount;
+        stats.folders[folderPath].totalFileSize += fileSize;
+        stats.folders[folderPath].totalDuplicateCount += duplicateCount; // Update folder-level duplicates
     }
 }
 
