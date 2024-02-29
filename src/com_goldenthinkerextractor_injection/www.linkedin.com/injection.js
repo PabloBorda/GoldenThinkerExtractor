@@ -49,14 +49,23 @@ async function mainScript() {
             };
 
             function addObjectIfUnique(newObj) {
-                const exists = completeObject.leads.find(obj => obj.name === newObj.name);
+                // Create a unique identifier by concatenating name, company, and jobTitle
+                const uniqueId = `${newObj.name}|${newObj.company}|${newObj.jobTitle}`;
+            
+                // Check if an object with the same unique identifier already exists in the leads array
+                const exists = completeObject.leads.some(obj => {
+                    const objUniqueId = `${obj.name}|${obj.company}|${obj.jobTitle}`;
+                    return objUniqueId === uniqueId;
+                });
+            
                 if (!exists) {
                     completeObject.leads.push(newObj);
-                    console.log(`Objeto con nombre ${newObj.name} agregado.`);
+                    console.log(`Objeto con identificador único ${uniqueId} agregado.`);
                 } else {
-                    console.log(`Objeto con nombre ${newObj.name} ya existe.`);
+                    console.log(`Objeto con identificador único ${uniqueId} ya existe.`);
                 }
             }
+            
 
             function sanitizeString(str) {
                 if (typeof str !== 'string') {
