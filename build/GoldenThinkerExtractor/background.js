@@ -104,6 +104,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
           new_tab_id: newTab.id
         }
       });
+      return true;
     });
   }
 });

@@ -145,6 +145,7 @@ async function open_tab(url) {
             } else {
                 reject(new Error("Failed to open tab"));
             }
+            return true;
         });
     });
 }

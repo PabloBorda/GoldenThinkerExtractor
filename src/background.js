@@ -76,6 +76,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.tabs.update(newTab.id, { active: true });
         console.log(JSON.stringify({status: "tab_was_opened", message: { new_tab_id: newTab.id}}));
         sendResponse({status: "tab_was_opened", message: { new_tab_id: newTab.id }});
+        return true;
       }); 
 }});
 
