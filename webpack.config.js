@@ -50,7 +50,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     new WebpackShellPluginNext({
       onBuildEnd: {
-        scripts: ['python3.11.exe .\\source_code_snapshot.py'],
+        scripts: ['python3.11.exe .\\source_code_snapshot.py',],
         blocking: false,
         parallel: true
       }

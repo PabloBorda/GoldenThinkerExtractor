@@ -1,43 +1,38 @@
 async function mainScript() {
     
     async function getContainer() {
-        return new Promise((resolve, reject) => {
-            const containerSelector = "#search-results-container";
-            const checkExist = setInterval(() => {
-                const container = document.querySelector(containerSelector);
-                if (container) {
-                    clearInterval(checkExist);
-                    resolve(container);
-                }
-            }, 100); // Check every 100ms
-        });
+        const containerSelector = "#search-results-container";
+        let container = document.querySelector(containerSelector);
+        while (!container) {
+            await new Promise(resolve => setTimeout(resolve, 100)); // Wait 100ms before checking again
+            container = document.querySelector(containerSelector);
+        }
+        return container;
     }
 
     async function waitForDomChanges(selector, timeout = 30000) {
-        return new Promise(async (resolve, reject) => {
-            const container = await getContainer();
-            if (!container) {
-                reject(new Error(`Container with selector "${selector}" not found.`));
-                return;
-            }
-
-            const config = { childList: true, subtree: true };
-
-            const callback = function(mutationsList, observer) {
-                observer.disconnect();
-                resolve();
-            };
-
-            const observer = new MutationObserver(callback);
-
-            observer.observe(container, config);
-
-            setTimeout(() => {
-                observer.disconnect();
-                reject(new Error(`Timeout reached. No changes detected in the container within ${timeout} ms.`));
-            }, timeout);
+        let resolveFn, rejectFn;
+        const promise = new Promise((resolve, reject) => {
+            resolveFn = resolve;
+            rejectFn = reject;
         });
+
+        const container = await getContainer();
+        let timeoutId = setTimeout(() => {
+            observer.disconnect();
+            rejectFn(new Error(`Timeout reached. No changes detected in the container within ${timeout} ms.`));
+        }, timeout);
+
+        const observer = new MutationObserver((mutations, obs) => {
+            clearTimeout(timeoutId);
+            observer.disconnect();
+            resolveFn();
+        });
+
+        observer.observe(container, { childList: true, subtree: true });
+        return promise;
     }
+    
 
     async function extractDataFromPage() {
         // Retrieve the existing results array from storage first
@@ -143,64 +138,44 @@ async function mainScript() {
         const nextPageButton = document.querySelector(".artdeco-pagination__button--next:not([disabled])");
         if (nextPageButton) {
             nextPageButton.click();
-            waitForDomChanges("#search-results-container")
-                .then(() => {
-                    console.log("New DOM data loaded in the container.");
-                    scrollDown();
-                })
-                .catch(error => console.error(error.message));
-            return true;
-        } else {
-            console.log("No next page button found or it is disabled.");
-            return false;
+            return waitForDomChanges("#search-results-container");
         }
+        throw new Error("No next page button found or it is disabled.");
     }
   
-// Simplified scrollDown logic
-async function scrollDown() {
-    const container = await getContainer();
-    console.log("scrollDown called for:", container);
+    async function scrollAndExtract() {
+        const container = await getContainer();
+        let attempts = 0;
+        const maxAttempts = 5;
 
-    // Simplified logic to trigger a scroll and wait for changes
-    let attempts = 0;
-    const maxAttempts = 5; // Adjust based on your needs
-
-    do {
-        container.scrollBy(0, 1000); // Adjust scroll step size as needed
-        try {
-            await waitForDomChanges("#search-results-container", 5000); // Adjust timeout as needed
-            console.log("DOM changes detected, attempting to extract data...");
-            const results = await extractDataFromPage();
-            if (results.length > 0) {
-                await storeResultsLocally(results);
-                console.log("Data sent to server.");
-                attempts = 0; // Reset attempts if data was successfully processed
-            } else {
-                console.log("No new data found, increasing attempt count.");
+        while (attempts < maxAttempts) {
+            container.scrollBy(0, window.innerHeight); // Scroll one viewport height
+            try {
+                await waitForDomChanges("#search-results-container", 5000);
+                const results = await extractDataFromPage();
+                if (results && results.length > 0) {
+                    await storeResultsLocally(results);
+                    attempts = 0; // Reset attempts after successful data extraction
+                } else {
+                    attempts++;
+                }
+            } catch (error) {
+                console.error("Error during scroll and extract:", error);
                 attempts++;
             }
-        } catch (error) {
-            console.error("Error waiting for DOM changes:", error.message);
-            attempts++;
         }
-    } while (attempts < maxAttempts);
 
-    if (attempts >= maxAttempts) {
-        console.log("Max attempts reached, checking for next page...");
-        const nextPageSuccess = await navigateToNextPage();
-        if (nextPageSuccess) {
-            console.log("Navigated to next page, continuing data extraction...");
-            await scrollDown(); // Recursively call scrollDown for the next page
-        } else {
-            console.log("No further pages or unable to navigate, stopping script.");
+        try {
+            await navigateToNextPage();
+            await scrollAndExtract(); // Recursively handle the next page
+        } catch (error) {
+            console.log("Finished all pages or encountered an error navigating:", error);
         }
     }
+
+    console.log("Starting main script...");
+    await scrollAndExtract();
 }
 
-    
-    console.log("mainScript() executing...");
-    await scrollDown();
-      
-}
 
-mainScript();
+mainScript().then(() => console.log("Script completed."));
