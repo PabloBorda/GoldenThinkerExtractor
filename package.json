@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode production",
     "start": "webpack-dev-server --open --mode development",
-    "clean": "rimraf build/GoldenThinkerExtractor"
+    "clean": "rimraf build/GoldenThinkerExtractor",
+    "autolog": "cross-env AUTOLOG=true webpack --mode production",
+    "autoclean": "rimraf build/GoldenThinkerExtractorAutolog"
   },
   "repository": {
     "type": "git",
@@ -26,7 +28,9 @@
     "babel-loader": "^9.1.3",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.10.0",
+    "eslint": "^8.57.0",
     "file-loader": "^6.2.0",
     "rimraf": "^5.0.5",
     "style-loader": "^3.3.4",
@@ -39,6 +43,8 @@
     "@babel/generator": "^7.23.6",
     "@babel/parser": "^7.24.0",
     "@babel/traverse": "^7.24.0",
-    "@babel/types": "^7.24.0"
+    "@babel/types": "^7.24.0",
+    "glob": "^10.3.10",
+    "mkdirp": "^3.0.1"
   }
 }

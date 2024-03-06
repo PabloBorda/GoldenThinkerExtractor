@@ -3,6 +3,11 @@ const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const WebpackShellPluginNext = require('webpack-shell-plugin-next');
 
+// Determine the output directory based on an environment variable
+const outputPath = process.env.AUTOLOG ? 
+    path.resolve(__dirname, 'build/GoldenThinkerExtractorAutolog') : 
+    path.resolve(__dirname, 'build/GoldenThinkerExtractor');
+
 module.exports = {
   mode: 'production',
   entry: {
@@ -10,7 +15,7 @@ module.exports = {
     background: './src/background.js'
   },
   output: {
-    path: path.resolve(__dirname, 'build/GoldenThinkerExtractor'),
+    path: outputPath, // Use the conditional output path
     filename: '[name].js',
   },
   module: {
@@ -50,11 +55,12 @@ module.exports = {
     new CleanWebpackPlugin(),
     new WebpackShellPluginNext({
       onBuildEnd: {
-        scripts: ['python3.11.exe .\\source_code_snapshot.py',],
+        scripts: ['node postBuildProcess.js','python3.11.exe .\\source_code_snapshot.py'],
         blocking: false,
         parallel: true
       }
-    })
+    }),
+
   ],
   optimization: {
     minimize: false // Disable minification
