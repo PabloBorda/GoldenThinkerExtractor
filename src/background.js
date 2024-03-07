@@ -71,14 +71,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 // open_new_tab
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === "open_new_tab") {
+  if (message.action === "open_new_tab") {
       chrome.tabs.create({ url: message.url, active: false }, function(newTab) {
-        chrome.tabs.update(newTab.id, { active: true });
-        console.log(JSON.stringify({status: "tab_was_opened", message: { new_tab_id: newTab.id}}));
-        sendResponse({status: "tab_was_opened", message: { new_tab_id: newTab.id }});
-        return true;
+          chrome.tabs.update(newTab.id, { active: true });
+          console.log(JSON.stringify({status: "tab_was_opened", message: { new_tab_id: newTab.id}}));
+          sendResponse({status: "tab_was_opened", message: { new_tab_id: newTab.id }});
       }); 
-}});
+      return true; // This must be outside of the chrome.tabs.create callback
+  }
+});
+
 
 
 

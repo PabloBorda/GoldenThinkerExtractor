@@ -135,6 +135,10 @@ function processUrl(url) {
 
 
 
+
+
+
+
 // open_tab
 async function open_tab(url) {
     return new Promise((resolve, reject) => {
@@ -170,23 +174,6 @@ async function close_tab() {
 
 
 
-
-// Extract links
-/* function extractLinks(url) {
-    return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({
-            action: "open_new_tab_and_extract_links",
-            url: url
-        }, response => {
-            if (response.links) {
-                resolve(response.links);
-            } else {
-                reject(new Error(response.error || "Unknown error extracting links"));
-            }
-        });
-    });
-}  */
-
 async function extractLinks(url){
     return Array.from(document.querySelectorAll('a')).map(a => a.href);
 }
@@ -194,55 +181,78 @@ async function extractLinks(url){
 
 
 
-// visitor recursive function
-async function visitor_link_tree(links, index = 0, parentTabId = null) {
-    if (links.length>0){
-        if (index >= links.length) {
-            console.log("Finished processing all links.");
-            // Close the parent tab if it exists and we're done processing its children
-            if (parentTabId) {
-                await close_tab(parentTabId);
-            }
-            return;
-        } else {            
-            // Send a message to the background script to open a new tab with the specified URL
-            chrome.runtime.sendMessage({
-                action: "open_new_tab",
-                url: links[index]
-            }, async response => {
-                if (response.status === "tab_was_opened") {
-                    console.log("New tab was opened successfully:", response.message);
-                    const link = links[index];
-                    console.log("Processing link:", link);
-                    const linkType = processUrl(link);
-                    if (linkType.type === "product_page") {
-                        console.log("Extracting product details from", link);
-                        // Assuming extractProductDetails is an async function or returns a promise
-                        const productDetails = await extractProductDetails(link);
-                        products.push(productDetails);
-                        console.log("Product details extracted:", productDetails);
-                        // Continue with the next link after a delay to respect rate limits
-                        setTimeout(() => visitor_link_tree(links, index + 1, parentTabId), 1000); // Adjust delay as needed
-                    } else if (linkType.type === "category_page") {
-                        console.log("Processing category page:", link);
-                        // Adjusted to directly use extractLinks without opening a new tab here
-                        // Assuming link is the URL from which you want to extract links
-                        const childLinks = await extractLinks(link);
-                        console.log("Extracted child links:", childLinks);
-                        // Recursively process the extracted links before moving to the next main link
-                        await visitor_link_tree(links, index + 1, parentTabId);
-                    } else {
-                        console.error("Failed to open new tab:", response.message);
-                    }
-                }
 
-            });
-        }
-    } else {
-        console.log("No more links snanned...")
-    }
+// Utility functions for chrome.storage
+async function isLinkVisited(link) {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get(['visitedLinks'], function(result) {
+            const visitedLinks = result.visitedLinks || [];
+            resolve(visitedLinks.includes(link));
+        });
+    });
 }
 
+
+
+
+
+async function markLinkAsVisited(link) {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get(['visitedLinks'], function(result) {
+            const visitedLinks = result.visitedLinks || [];
+            if (!visitedLinks.includes(link)) {
+                visitedLinks.push(link);
+                chrome.storage.local.set({visitedLinks: visitedLinks}, () => {
+                    resolve();
+                });
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
+
+
+
+// The main recursive visitor function
+async function visitor_link_tree(links, index = 0, parentTabId = null, allLinks = []) {
+    if (index >= links.length) {
+        console.log("Finished processing all links.");
+        if (parentTabId) {
+            await close_tab(parentTabId);
+        }
+        return;
+    }
+
+    const link = links[index];
+    const visited = await isLinkVisited(link);
+
+    if (!visited) {
+        await markLinkAsVisited(link);
+        chrome.runtime.sendMessage({ action: "open_new_tab", url: link }, async (response) => {
+            if (response && response.status === "tab_was_opened") {
+                console.log("New tab was opened successfully:", response.message);
+                // Extract links from the newly opened tab
+                const childLinks = await extractLinks(link); // Assume this function exists
+                const newLinks = childLinks.filter(l => !allLinks.includes(l) && !links.includes(l));
+                const updatedLinks = [...links, ...newLinks];
+                allLinks.push(...newLinks); // Update the global list of all links encountered
+
+                // Proceed to the next link
+                await visitor_link_tree(updatedLinks, index + 1, parentTabId, allLinks);
+            } else {
+                console.error("Failed to open new tab or no response received.");
+                // Skip to the next link if the current one failed
+                await visitor_link_tree(links, index + 1, parentTabId, allLinks);
+            }
+        });
+    } else {
+        console.log("Link already visited:", link);
+        // Skip to the next link without opening a new tab
+        await visitor_link_tree(links, index + 1, parentTabId, allLinks);
+    }
+}
 
 
 

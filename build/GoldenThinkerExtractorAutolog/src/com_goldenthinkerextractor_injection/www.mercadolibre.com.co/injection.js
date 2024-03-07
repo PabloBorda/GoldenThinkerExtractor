@@ -273,117 +273,117 @@ console.log(new Date().toISOString(), "injection.js", 136);
 console.log(new Date().toISOString(), "injection.js", 137);
 
 console.log(new Date().toISOString(), "injection.js", 138);
-// open_tab
+
 console.log(new Date().toISOString(), "injection.js", 139);
-async function open_tab(url) {
+
 console.log(new Date().toISOString(), "injection.js", 140);
-    return new Promise((resolve, reject) => {
+
 console.log(new Date().toISOString(), "injection.js", 141);
-        chrome.runtime.sendMessage({action: "open_new_tab", url: url}, function(response) {
+
 console.log(new Date().toISOString(), "injection.js", 142);
-            if (response.status === "tab_was_opened") {
+// open_tab
 console.log(new Date().toISOString(), "injection.js", 143);
-                console.log("Tab was opened:", url);
+async function open_tab(url) {
 console.log(new Date().toISOString(), "injection.js", 144);
-                resolve(response.new_tab_id); // Ensure your background script sends back the new tab ID
+    return new Promise((resolve, reject) => {
 console.log(new Date().toISOString(), "injection.js", 145);
-            } else {
+        chrome.runtime.sendMessage({action: "open_new_tab", url: url}, function(response) {
 console.log(new Date().toISOString(), "injection.js", 146);
-                reject(new Error("Failed to open tab"));
+            if (response.status === "tab_was_opened") {
 console.log(new Date().toISOString(), "injection.js", 147);
-            }
+                console.log("Tab was opened:", url);
 console.log(new Date().toISOString(), "injection.js", 148);
-            return true;
+                resolve(response.new_tab_id); // Ensure your background script sends back the new tab ID
 console.log(new Date().toISOString(), "injection.js", 149);
-        });
+            } else {
 console.log(new Date().toISOString(), "injection.js", 150);
-    });
+                reject(new Error("Failed to open tab"));
 console.log(new Date().toISOString(), "injection.js", 151);
-}
+            }
 console.log(new Date().toISOString(), "injection.js", 152);
-
+            return true;
 console.log(new Date().toISOString(), "injection.js", 153);
-
+        });
 console.log(new Date().toISOString(), "injection.js", 154);
-
+    });
 console.log(new Date().toISOString(), "injection.js", 155);
-
+}
 console.log(new Date().toISOString(), "injection.js", 156);
-// close_tab
+
 console.log(new Date().toISOString(), "injection.js", 157);
-async function close_tab() {
+
 console.log(new Date().toISOString(), "injection.js", 158);
-    return new Promise((resolve, reject) => {
+
 console.log(new Date().toISOString(), "injection.js", 159);
-        chrome.runtime.sendMessage({action: "close_current_tab"}, function(response) {
+
 console.log(new Date().toISOString(), "injection.js", 160);
-            if (response.status === "success") {
+// close_tab
 console.log(new Date().toISOString(), "injection.js", 161);
-                console.log(response.message);
+async function close_tab() {
 console.log(new Date().toISOString(), "injection.js", 162);
-                resolve();
-console.log(new Date().toISOString(), "injection.js", 163);
-            } else {
-console.log(new Date().toISOString(), "injection.js", 164);
-                console.error(response.message);
-console.log(new Date().toISOString(), "injection.js", 165);
-                reject(new Error(response.message));
-console.log(new Date().toISOString(), "injection.js", 166);
-            }
-console.log(new Date().toISOString(), "injection.js", 167);
-        });
-console.log(new Date().toISOString(), "injection.js", 168);
-    });
-console.log(new Date().toISOString(), "injection.js", 169);
-}
-console.log(new Date().toISOString(), "injection.js", 170);
-
-console.log(new Date().toISOString(), "injection.js", 171);
-
-console.log(new Date().toISOString(), "injection.js", 172);
-
-console.log(new Date().toISOString(), "injection.js", 173);
-
-console.log(new Date().toISOString(), "injection.js", 174);
-// Extract links
-console.log(new Date().toISOString(), "injection.js", 175);
-/* function extractLinks(url) {
-console.log(new Date().toISOString(), "injection.js", 176);
     return new Promise((resolve, reject) => {
-console.log(new Date().toISOString(), "injection.js", 177);
-        chrome.runtime.sendMessage({
-console.log(new Date().toISOString(), "injection.js", 178);
-            action: "open_new_tab_and_extract_links",
-console.log(new Date().toISOString(), "injection.js", 179);
-            url: url
-console.log(new Date().toISOString(), "injection.js", 180);
-        }, response => {
-console.log(new Date().toISOString(), "injection.js", 181);
-            if (response.links) {
-console.log(new Date().toISOString(), "injection.js", 182);
-                resolve(response.links);
-console.log(new Date().toISOString(), "injection.js", 183);
+console.log(new Date().toISOString(), "injection.js", 163);
+        chrome.runtime.sendMessage({action: "close_current_tab"}, function(response) {
+console.log(new Date().toISOString(), "injection.js", 164);
+            if (response.status === "success") {
+console.log(new Date().toISOString(), "injection.js", 165);
+                console.log(response.message);
+console.log(new Date().toISOString(), "injection.js", 166);
+                resolve();
+console.log(new Date().toISOString(), "injection.js", 167);
             } else {
-console.log(new Date().toISOString(), "injection.js", 184);
-                reject(new Error(response.error || "Unknown error extracting links"));
-console.log(new Date().toISOString(), "injection.js", 185);
+console.log(new Date().toISOString(), "injection.js", 168);
+                console.error(response.message);
+console.log(new Date().toISOString(), "injection.js", 169);
+                reject(new Error(response.message));
+console.log(new Date().toISOString(), "injection.js", 170);
             }
-console.log(new Date().toISOString(), "injection.js", 186);
+console.log(new Date().toISOString(), "injection.js", 171);
         });
-console.log(new Date().toISOString(), "injection.js", 187);
+console.log(new Date().toISOString(), "injection.js", 172);
     });
-console.log(new Date().toISOString(), "injection.js", 188);
-}  */
-console.log(new Date().toISOString(), "injection.js", 189);
-
-console.log(new Date().toISOString(), "injection.js", 190);
-async function extractLinks(url){
-console.log(new Date().toISOString(), "injection.js", 191);
-    return Array.from(document.querySelectorAll('a')).map(a => a.href);
-console.log(new Date().toISOString(), "injection.js", 192);
+console.log(new Date().toISOString(), "injection.js", 173);
 }
-console.log(new Date().toISOString(), "injection.js", 193);
+console.log(new Date().toISOString(), "injection.js", 174);
 
+console.log(new Date().toISOString(), "injection.js", 175);
+
+console.log(new Date().toISOString(), "injection.js", 176);
+
+console.log(new Date().toISOString(), "injection.js", 177);
+async function extractLinks(url){
+console.log(new Date().toISOString(), "injection.js", 178);
+    return Array.from(document.querySelectorAll('a')).map(a => a.href);
+console.log(new Date().toISOString(), "injection.js", 179);
+}
+console.log(new Date().toISOString(), "injection.js", 180);
+
+console.log(new Date().toISOString(), "injection.js", 181);
+
+console.log(new Date().toISOString(), "injection.js", 182);
+
+console.log(new Date().toISOString(), "injection.js", 183);
+
+console.log(new Date().toISOString(), "injection.js", 184);
+
+console.log(new Date().toISOString(), "injection.js", 185);
+// Utility functions for chrome.storage
+console.log(new Date().toISOString(), "injection.js", 186);
+async function isLinkVisited(link) {
+console.log(new Date().toISOString(), "injection.js", 187);
+    return new Promise((resolve, reject) => {
+console.log(new Date().toISOString(), "injection.js", 188);
+        chrome.storage.local.get(['visitedLinks'], function(result) {
+console.log(new Date().toISOString(), "injection.js", 189);
+            const visitedLinks = result.visitedLinks || [];
+console.log(new Date().toISOString(), "injection.js", 190);
+            resolve(visitedLinks.includes(link));
+console.log(new Date().toISOString(), "injection.js", 191);
+        });
+console.log(new Date().toISOString(), "injection.js", 192);
+    });
+console.log(new Date().toISOString(), "injection.js", 193);
+}
 console.log(new Date().toISOString(), "injection.js", 194);
 
 console.log(new Date().toISOString(), "injection.js", 195);
@@ -391,127 +391,147 @@ console.log(new Date().toISOString(), "injection.js", 195);
 console.log(new Date().toISOString(), "injection.js", 196);
 
 console.log(new Date().toISOString(), "injection.js", 197);
-// visitor recursive function
+
 console.log(new Date().toISOString(), "injection.js", 198);
-async function visitor_link_tree(links, index = 0, parentTabId = null) {
+
 console.log(new Date().toISOString(), "injection.js", 199);
-    if (links.length>0){
+async function markLinkAsVisited(link) {
 console.log(new Date().toISOString(), "injection.js", 200);
-        if (index >= links.length) {
+    return new Promise((resolve, reject) => {
 console.log(new Date().toISOString(), "injection.js", 201);
-            console.log("Finished processing all links.");
+        chrome.storage.local.get(['visitedLinks'], function(result) {
 console.log(new Date().toISOString(), "injection.js", 202);
-            // Close the parent tab if it exists and we're done processing its children
+            const visitedLinks = result.visitedLinks || [];
 console.log(new Date().toISOString(), "injection.js", 203);
-            if (parentTabId) {
+            if (!visitedLinks.includes(link)) {
 console.log(new Date().toISOString(), "injection.js", 204);
-                await close_tab(parentTabId);
+                visitedLinks.push(link);
 console.log(new Date().toISOString(), "injection.js", 205);
-            }
+                chrome.storage.local.set({visitedLinks: visitedLinks}, () => {
 console.log(new Date().toISOString(), "injection.js", 206);
-            return;
+                    resolve();
 console.log(new Date().toISOString(), "injection.js", 207);
-        } else {            
+                });
 console.log(new Date().toISOString(), "injection.js", 208);
-            // Send a message to the background script to open a new tab with the specified URL
+            } else {
 console.log(new Date().toISOString(), "injection.js", 209);
-            chrome.runtime.sendMessage({
+                resolve();
 console.log(new Date().toISOString(), "injection.js", 210);
-                action: "open_new_tab",
+            }
 console.log(new Date().toISOString(), "injection.js", 211);
-                url: links[index]
+        });
 console.log(new Date().toISOString(), "injection.js", 212);
-            }, async response => {
+    });
 console.log(new Date().toISOString(), "injection.js", 213);
-                if (response.status === "tab_was_opened") {
-console.log(new Date().toISOString(), "injection.js", 214);
-                    console.log("New tab was opened successfully:", response.message);
-console.log(new Date().toISOString(), "injection.js", 215);
-                    const link = links[index];
-console.log(new Date().toISOString(), "injection.js", 216);
-                    console.log("Processing link:", link);
-console.log(new Date().toISOString(), "injection.js", 217);
-                    const linkType = processUrl(link);
-console.log(new Date().toISOString(), "injection.js", 218);
-                    if (linkType.type === "product_page") {
-console.log(new Date().toISOString(), "injection.js", 219);
-                        console.log("Extracting product details from", link);
-console.log(new Date().toISOString(), "injection.js", 220);
-                        // Assuming extractProductDetails is an async function or returns a promise
-console.log(new Date().toISOString(), "injection.js", 221);
-                        const productDetails = await extractProductDetails(link);
-console.log(new Date().toISOString(), "injection.js", 222);
-                        products.push(productDetails);
-console.log(new Date().toISOString(), "injection.js", 223);
-                        console.log("Product details extracted:", productDetails);
-console.log(new Date().toISOString(), "injection.js", 224);
-                        // Continue with the next link after a delay to respect rate limits
-console.log(new Date().toISOString(), "injection.js", 225);
-                        setTimeout(() => visitor_link_tree(links, index + 1, parentTabId), 1000); // Adjust delay as needed
-console.log(new Date().toISOString(), "injection.js", 226);
-                    } else if (linkType.type === "category_page") {
-console.log(new Date().toISOString(), "injection.js", 227);
-                        console.log("Processing category page:", link);
-console.log(new Date().toISOString(), "injection.js", 228);
-                        // Adjusted to directly use extractLinks without opening a new tab here
-console.log(new Date().toISOString(), "injection.js", 229);
-                        // Assuming link is the URL from which you want to extract links
-console.log(new Date().toISOString(), "injection.js", 230);
-                        const childLinks = await extractLinks(link);
-console.log(new Date().toISOString(), "injection.js", 231);
-                        console.log("Extracted child links:", childLinks);
-console.log(new Date().toISOString(), "injection.js", 232);
-                        // Recursively process the extracted links before moving to the next main link
-console.log(new Date().toISOString(), "injection.js", 233);
-                        await visitor_link_tree(links, index + 1, parentTabId);
-console.log(new Date().toISOString(), "injection.js", 234);
-                    } else {
-console.log(new Date().toISOString(), "injection.js", 235);
-                        console.error("Failed to open new tab:", response.message);
-console.log(new Date().toISOString(), "injection.js", 236);
-                    }
-console.log(new Date().toISOString(), "injection.js", 237);
-                }
-console.log(new Date().toISOString(), "injection.js", 238);
-
-console.log(new Date().toISOString(), "injection.js", 239);
-            });
-console.log(new Date().toISOString(), "injection.js", 240);
-        }
-console.log(new Date().toISOString(), "injection.js", 241);
-    } else {
-console.log(new Date().toISOString(), "injection.js", 242);
-        console.log("No more links snanned...")
-console.log(new Date().toISOString(), "injection.js", 243);
-    }
-console.log(new Date().toISOString(), "injection.js", 244);
 }
+console.log(new Date().toISOString(), "injection.js", 214);
+
+console.log(new Date().toISOString(), "injection.js", 215);
+
+console.log(new Date().toISOString(), "injection.js", 216);
+
+console.log(new Date().toISOString(), "injection.js", 217);
+
+console.log(new Date().toISOString(), "injection.js", 218);
+// The main recursive visitor function
+console.log(new Date().toISOString(), "injection.js", 219);
+async function visitor_link_tree(links, index = 0, parentTabId = null, allLinks = []) {
+console.log(new Date().toISOString(), "injection.js", 220);
+    if (index >= links.length) {
+console.log(new Date().toISOString(), "injection.js", 221);
+        console.log("Finished processing all links.");
+console.log(new Date().toISOString(), "injection.js", 222);
+        if (parentTabId) {
+console.log(new Date().toISOString(), "injection.js", 223);
+            await close_tab(parentTabId);
+console.log(new Date().toISOString(), "injection.js", 224);
+        }
+console.log(new Date().toISOString(), "injection.js", 225);
+        return;
+console.log(new Date().toISOString(), "injection.js", 226);
+    }
+console.log(new Date().toISOString(), "injection.js", 227);
+
+console.log(new Date().toISOString(), "injection.js", 228);
+    const link = links[index];
+console.log(new Date().toISOString(), "injection.js", 229);
+    const visited = await isLinkVisited(link);
+console.log(new Date().toISOString(), "injection.js", 230);
+
+console.log(new Date().toISOString(), "injection.js", 231);
+    if (!visited) {
+console.log(new Date().toISOString(), "injection.js", 232);
+        await markLinkAsVisited(link);
+console.log(new Date().toISOString(), "injection.js", 233);
+        chrome.runtime.sendMessage({ action: "open_new_tab", url: link }, async (response) => {
+console.log(new Date().toISOString(), "injection.js", 234);
+            if (response && response.status === "tab_was_opened") {
+console.log(new Date().toISOString(), "injection.js", 235);
+                console.log("New tab was opened successfully:", response.message);
+console.log(new Date().toISOString(), "injection.js", 236);
+                // Extract links from the newly opened tab
+console.log(new Date().toISOString(), "injection.js", 237);
+                const childLinks = await extractLinks(link); // Assume this function exists
+console.log(new Date().toISOString(), "injection.js", 238);
+                const newLinks = childLinks.filter(l => !allLinks.includes(l) && !links.includes(l));
+console.log(new Date().toISOString(), "injection.js", 239);
+                const updatedLinks = [...links, ...newLinks];
+console.log(new Date().toISOString(), "injection.js", 240);
+                allLinks.push(...newLinks); // Update the global list of all links encountered
+console.log(new Date().toISOString(), "injection.js", 241);
+
+console.log(new Date().toISOString(), "injection.js", 242);
+                // Proceed to the next link
+console.log(new Date().toISOString(), "injection.js", 243);
+                await visitor_link_tree(updatedLinks, index + 1, parentTabId, allLinks);
+console.log(new Date().toISOString(), "injection.js", 244);
+            } else {
 console.log(new Date().toISOString(), "injection.js", 245);
-
+                console.error("Failed to open new tab or no response received.");
 console.log(new Date().toISOString(), "injection.js", 246);
-
+                // Skip to the next link if the current one failed
 console.log(new Date().toISOString(), "injection.js", 247);
-
+                await visitor_link_tree(links, index + 1, parentTabId, allLinks);
 console.log(new Date().toISOString(), "injection.js", 248);
-
+            }
 console.log(new Date().toISOString(), "injection.js", 249);
-// -------------------------------- main ----------------------------------------
+        });
 console.log(new Date().toISOString(), "injection.js", 250);
-
+    } else {
 console.log(new Date().toISOString(), "injection.js", 251);
-
+        console.log("Link already visited:", link);
 console.log(new Date().toISOString(), "injection.js", 252);
-var products = [];
+        // Skip to the next link without opening a new tab
 console.log(new Date().toISOString(), "injection.js", 253);
-
+        await visitor_link_tree(links, index + 1, parentTabId, allLinks);
 console.log(new Date().toISOString(), "injection.js", 254);
-
+    }
 console.log(new Date().toISOString(), "injection.js", 255);
-// Start the process with the root link
+}
 console.log(new Date().toISOString(), "injection.js", 256);
-const rootLink = "https://www.mercadolibre.com.co/categorias#menu=categories";
+
 console.log(new Date().toISOString(), "injection.js", 257);
-const initialLinks = [rootLink]; // This would be your starting set of links
+
 console.log(new Date().toISOString(), "injection.js", 258);
-visitor_link_tree(initialLinks,0,null);
+
 console.log(new Date().toISOString(), "injection.js", 259);
+// -------------------------------- main ----------------------------------------
+console.log(new Date().toISOString(), "injection.js", 260);
+
+console.log(new Date().toISOString(), "injection.js", 261);
+
+console.log(new Date().toISOString(), "injection.js", 262);
+var products = [];
+console.log(new Date().toISOString(), "injection.js", 263);
+
+console.log(new Date().toISOString(), "injection.js", 264);
+
+console.log(new Date().toISOString(), "injection.js", 265);
+// Start the process with the root link
+console.log(new Date().toISOString(), "injection.js", 266);
+const rootLink = "https://www.mercadolibre.com.co/categorias#menu=categories";
+console.log(new Date().toISOString(), "injection.js", 267);
+const initialLinks = [rootLink]; // This would be your starting set of links
+console.log(new Date().toISOString(), "injection.js", 268);
+visitor_link_tree(initialLinks,0,null);
+console.log(new Date().toISOString(), "injection.js", 269);

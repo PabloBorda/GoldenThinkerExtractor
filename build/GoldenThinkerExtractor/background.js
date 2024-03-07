@@ -104,8 +104,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
           new_tab_id: newTab.id
         }
       });
-      return true;
     });
+    return true; // This must be outside of the chrome.tabs.create callback
   }
 });
 
