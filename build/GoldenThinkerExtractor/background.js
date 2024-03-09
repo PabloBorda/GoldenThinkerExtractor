@@ -89,23 +89,21 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       url: message.url,
       active: false
     }, function (newTab) {
-      chrome.tabs.update(newTab.id, {
-        active: true
-      });
-      console.log(JSON.stringify({
-        status: "tab_was_opened",
-        message: {
-          new_tab_id: newTab.id
+      var checkTabLoaded = function checkTabLoaded(tabId, changeInfo, tab) {
+        if (tabId === newTab.id && changeInfo.status === 'complete') {
+          // Tab is fully loaded, now safe to inject the script
+          chrome.tabs.onUpdated.removeListener(checkTabLoaded); // Clean up the listener
+          console.log("Tab fully loaded with ID:", newTab.id);
+          // Proceed with any actions needed after the tab is loaded
+          sendResponse({
+            status: "tab_was_opened",
+            new_tab_id: newTab.id
+          });
         }
-      }));
-      sendResponse({
-        status: "tab_was_opened",
-        message: {
-          new_tab_id: newTab.id
-        }
-      });
+      };
+      chrome.tabs.onUpdated.addListener(checkTabLoaded);
     });
-    return true; // This must be outside of the chrome.tabs.create callback
+    return true; // Keep the message channel open for the sendResponse callback
   }
 });
 

@@ -1,3 +1,16 @@
+function logStoredLinks() {
+    chrome.storage.local.get(['links'], function(result) {
+        if (result.links) {
+            console.log('Stored links:', result.links);
+        } else {
+            console.log('No links stored.');
+        }
+    });
+}
+
+
+
+
 function extractProductDetails() {
     const productDetails = {};
 
@@ -102,54 +115,36 @@ function extractProductDetails() {
 
 // Function to process each URL
 function processUrl(url) {
-  let result = {};
-  if (url.includes('articulo.mercadolibre.com.co') && url.match(/MCO-\d+/)) {
-      // Product Page
+    let result = {};
+    if (url.includes('articulo.mercadolibre.com.co') && url.match(/MCO-\d+/)) {
+      console.log("Processing as product page:", url);
       result.type = "product_page";
       result.productId = url.split("/")[4].split("-")[1];
       result.productName = url.split("/")[4].split("-").slice(2).join(" ").split("_")[0];
-  } else if (url.includes("categories")) {
-        result.type = "category_page";
-        result.categoryName = "root_category"
-  } else if (url.includes("www.mercadolibre.com.co/c/")) {
-      // Category Page
+    } else if (url.includes("categories")) {
+      console.log("Processing as category page:", url);
       result.type = "category_page";
-      result.categoryName = url.split("/")[4].split("#")[0];
-  } else if (url.includes("listado.mercadolibre.com.co/_Deal_")) {
-      // Deal Page
-      result.type = "deal_page";
-      result.dealName = url.split("_Deal_")[1].split("#")[0];
-  } else if (url.includes("listado.mercadolibre.com.co/") && url.includes("_")) {
-      // Filtered Search Result
-      result.type = "filtered_search_results";
-      result.searchTerm = url.split(".com.co/")[1].split("_")[0];
-      result.filters = url.split("_").slice(1).join("_").split("#")[0];
-  } else if (url === "https://www.mercadolibre.com.co/") {
-      // Home Page
-      result.type = "Home Page";
+      result.categoryName = "root_category";
+    } else {
+      console.log("Processing as other type of page:", url);
+      result.type = "other";
+    }
+    return result;
   }
-  // Add more conditions as needed for other patterns
-  return result;
-}
-
-
-
-
-
 
 
 
 // open_tab
 async function open_tab(url) {
     return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({action: "open_new_tab", url: url}, function(response) {
-            if (response.status === "tab_was_opened") {
-                console.log("Tab was opened:", url);
-                resolve(response.new_tab_id); // Ensure your background script sends back the new tab ID
+        chrome.runtime.sendMessage({action: "open_new_tab", url: url}, (response) => {
+            if (response && response.status === "tab_was_opened") {
+                console.log("Tab was opened:", url, "with ID:", response.new_tab_id);
+                resolve(response.new_tab_id);
             } else {
-                reject(new Error("Failed to open tab"));
+                console.error("Failed to open tab or no response received.");
+                reject(new Error("Failed to open tab or no response received."));
             }
-            return true;
         });
     });
 }
@@ -174,6 +169,7 @@ async function close_tab() {
 
 
 
+
 async function extractLinks(url){
     return Array.from(document.querySelectorAll('a')).map(a => a.href);
 }
@@ -181,88 +177,169 @@ async function extractLinks(url){
 
 
 
-
-// Utility functions for chrome.storage
-async function isLinkVisited(link) {
-    return new Promise((resolve, reject) => {
-        chrome.storage.local.get(['visitedLinks'], function(result) {
-            const visitedLinks = result.visitedLinks || [];
-            resolve(visitedLinks.includes(link));
-        });
+// Function to check if a link is visited
+async function isLinkVisited(linkUrl) {
+    console.log("Checking if link is visited:", linkUrl);
+    return new Promise((resolve) => {
+      chrome.storage.local.get(['links'], function(result) {
+        const visited = result.links && result.links.some(link => link.url === linkUrl);
+        console.log("Visited status for", linkUrl, ":", visited);
+        resolve(visited);
+      });
     });
-}
+  }
 
 
 
 
-
-async function markLinkAsVisited(link) {
-    return new Promise((resolve, reject) => {
-        chrome.storage.local.get(['visitedLinks'], function(result) {
-            const visitedLinks = result.visitedLinks || [];
-            if (!visitedLinks.includes(link)) {
-                visitedLinks.push(link);
-                chrome.storage.local.set({visitedLinks: visitedLinks}, () => {
-                    resolve();
-                });
-            } else {
-                resolve();
-            }
+// Update or add link details in the global storage
+async function updateLinkDetails(link, productDetails = null) {
+    console.log("Updating link details for:", link);
+    return new Promise((resolve) => {
+      chrome.storage.local.get(['links'], function(result) {
+        let links = result.links || [];
+        const existingLinkIndex = links.findIndex(l => l.url === link);
+  
+        if (existingLinkIndex !== -1) {
+          console.log("Link exists. Updating:", link);
+          links[existingLinkIndex].updated = new Date().toISOString();
+          if (productDetails) {
+            links[existingLinkIndex].product_data = productDetails;
+          }
+        } else {
+          console.log("New link. Adding:", link);
+          links.push({
+            url: link,
+            updated: new Date().toISOString(),
+            product_data: productDetails,
+            mirrors: []
+          });
+        }
+  
+        chrome.storage.local.set({links}, () => {
+          console.log("Link details updated in storage for:", link);
+          resolve();
         });
+      });
     });
-}
+  }
 
 
 
 
-// The main recursive visitor function
-async function visitor_link_tree(links, index = 0, parentTabId = null, allLinks = []) {
+
+// Revised visitor_link_tree function with processUrl and extractProductDetails integration
+async function visitor_link_tree(links, index = 0, parentTabId = null) {
     if (index >= links.length) {
         console.log("Finished processing all links.");
         if (parentTabId) {
+            console.log("Closing parent tab id:", parentTabId);
             await close_tab(parentTabId);
         }
         return;
     }
 
     const link = links[index];
+    console.log("Processing link:", link);
+    const linkType = processUrl(link); // Determine the type of the link
+    console.log("Link type determined as:", linkType.type);
+
+    // Check if the link has already been visited
     const visited = await isLinkVisited(link);
+    console.log("Visited status for", link, ":", visited);
 
     if (!visited) {
-        await markLinkAsVisited(link);
-        chrome.runtime.sendMessage({ action: "open_new_tab", url: link }, async (response) => {
-            if (response && response.status === "tab_was_opened") {
-                console.log("New tab was opened successfully:", response.message);
-                // Extract links from the newly opened tab
-                const childLinks = await extractLinks(link); // Assume this function exists
-                const newLinks = childLinks.filter(l => !allLinks.includes(l) && !links.includes(l));
-                const updatedLinks = [...links, ...newLinks];
-                allLinks.push(...newLinks); // Update the global list of all links encountered
+        let productDetails = null;
+        if (linkType.type === "product_page") {
+            console.log("Extracting product details for:", link);
+            productDetails = extractProductDetails(); // Adjust if this needs to be done asynchronously
+            console.log("Product details extracted:", productDetails);
+        }
+        await updateLinkDetails(link, productDetails);
+        console.log("Link details updated for:", link);
 
-                // Proceed to the next link
-                await visitor_link_tree(updatedLinks, index + 1, parentTabId, allLinks);
-            } else {
-                console.error("Failed to open new tab or no response received.");
-                // Skip to the next link if the current one failed
-                await visitor_link_tree(links, index + 1, parentTabId, allLinks);
-            }
-        });
+        // Random delay between 1 to 3 seconds
+        const delay = Math.floor(Math.random() * (3000 - 1000 + 1)) + 1000;
+        console.log(`Waiting for ${delay}ms before opening the next tab for link: ${link}`);
+
+        setTimeout(async () => {
+            await open_tab(link); // Open the tab and wait for it to load
+            console.log("New tab was opened successfully for:", link);
+
+            // Extract and process new links from the opened tab's content
+            const childLinks = await extractLinks(link); // Adjust if this needs to be done differently
+            console.log("Extracted child links:", childLinks);
+
+            const newLinks = childLinks.filter(l => !links.includes(l));
+            links = [...links, ...newLinks]; // Update the list of links to include newly discovered ones
+            console.log("Updated links list with new discoveries:", links);
+
+            // Proceed to the next link
+            await visitor_link_tree(links, index + 1, parentTabId);
+        }, delay);
     } else {
-        console.log("Link already visited:", link);
+        console.log("Link already visited, skipping:", link);
         // Skip to the next link without opening a new tab
-        await visitor_link_tree(links, index + 1, parentTabId, allLinks);
+        await visitor_link_tree(links, index + 1, parentTabId);
     }
 }
 
 
+// Revised visitor_link_tree function for BFS with tab opening for all links and random delay
+async function visitor_link_tree_bfs(rootLinks) {
+    let queue = [...rootLinks]; // Initialize the queue with root links
+    let visited = new Set(); // Keep track of visited links to avoid revisits
+
+    while (queue.length > 0) {
+        const currentLink = queue.shift(); // Dequeue the next link to visit
+
+        if (visited.has(currentLink)) {
+            continue; // Skip if already visited
+        }
+        visited.add(currentLink); // Mark this link as visited
+
+        // Determine the type of the current link
+        const linkType = processUrl(currentLink);
+        console.log("Visiting link:", currentLink, "Type:", linkType.type);
+
+        // Open the tab and wait for it to be ready
+        try {
+            const tabId = await open_tab(currentLink);
+            console.log("Tab opened successfully for:", currentLink, "Tab ID:", tabId);
+
+            // Here, you would extract links or product details from the tab.
+            // Since we're simulating, let's assume you have a function to do this:
+            // For product pages, extract product details
+            let productDetails = null;
+            if (linkType.type === "product_page") {
+                productDetails = await extractProductDetails(); // Simulated function
+                await updateLinkDetails(currentLink, productDetails);
+            }
+
+            // For all pages, extract links and add them to the queue
+            const childLinks = await extractLinks(currentLink); // Simulated function
+            childLinks.forEach(link => {
+                if (!visited.has(link)) {
+                    queue.push(link);
+                }
+            });
+
+            // Close the tab if necessary
+            await close_tab(tabId);
+        } catch (error) {
+            console.error("Error processing link:", currentLink, error);
+        }
+
+        // Implement a delay between processing each link
+        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    }
+
+    console.log("Finished visiting all links");
+}
 
 // -------------------------------- main ----------------------------------------
 
 
-var products = [];
 
-
-// Start the process with the root link
-const rootLink = "https://www.mercadolibre.com.co/categorias#menu=categories";
-const initialLinks = [rootLink]; // This would be your starting set of links
-visitor_link_tree(initialLinks,0,null);
+const rootLinks = ["https://www.mercadolibre.com.co/categorias#menu=categories"];
+visitor_link_tree_bfs(rootLinks);
