@@ -1,3 +1,21 @@
+
+// Inject a script to set a flag indicating the script has been injected
+function injectFlagScript() {
+    const scriptContent = `
+        if (!window.myContentScriptInjected) {
+            window.myContentScriptInjected = true;
+            // Your script's main logic here
+        }
+    `;
+    const scriptElement = document.createElement('script');
+    scriptElement.textContent = scriptContent;
+    (document.head || document.documentElement).appendChild(scriptElement);
+    scriptElement.remove(); // Optional: Remove the script element once executed
+}
+
+
+
+
 function logStoredLinks() {
     chrome.storage.local.get(['links'], function(result) {
         if (result.links) {
@@ -187,7 +205,7 @@ async function isLinkVisited(linkUrl) {
         resolve(visited);
       });
     });
-  }
+}
 
 
 
@@ -222,7 +240,7 @@ async function updateLinkDetails(link, productDetails = null) {
         });
       });
     });
-  }
+}
 
 
 
@@ -285,61 +303,62 @@ async function visitor_link_tree(links, index = 0, parentTabId = null) {
 }
 
 
-// Revised visitor_link_tree function for BFS with tab opening for all links and random delay
+
+
+
+// Revised visitor_link_tree_bfs function for BFS with tab opening for all links and random delay
 async function visitor_link_tree_bfs(rootLinks) {
-    let queue = [...rootLinks]; // Initialize the queue with root links
-    let visited = new Set(); // Keep track of visited links to avoid revisits
+    let queue = [...rootLinks];
+    let visited = new Set();
 
     while (queue.length > 0) {
-        const currentLink = queue.shift(); // Dequeue the next link to visit
+        const currentLink = queue.shift();
+        if (visited.has(currentLink)) continue;
+        visited.add(currentLink);
 
-        if (visited.has(currentLink)) {
-            continue; // Skip if already visited
-        }
-        visited.add(currentLink); // Mark this link as visited
+        // Open the tab for every link, not just product pages
+        const tabId = await open_tab(currentLink);
+        console.log("Tab opened for:", currentLink, "Tab ID:", tabId);
 
-        // Determine the type of the current link
+        // Wait for the tab to fully load before proceeding
+        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+
+        // Process the link (extract product details if it's a product page, etc.)
         const linkType = processUrl(currentLink);
-        console.log("Visiting link:", currentLink, "Type:", linkType.type);
-
-        // Open the tab and wait for it to be ready
-        try {
-            const tabId = await open_tab(currentLink);
-            console.log("Tab opened successfully for:", currentLink, "Tab ID:", tabId);
-
-            // Here, you would extract links or product details from the tab.
-            // Since we're simulating, let's assume you have a function to do this:
-            // For product pages, extract product details
-            let productDetails = null;
-            if (linkType.type === "product_page") {
-                productDetails = await extractProductDetails(); // Simulated function
-                await updateLinkDetails(currentLink, productDetails);
-            }
-
-            // For all pages, extract links and add them to the queue
-            const childLinks = await extractLinks(currentLink); // Simulated function
-            childLinks.forEach(link => {
-                if (!visited.has(link)) {
-                    queue.push(link);
-                }
-            });
-
-            // Close the tab if necessary
-            await close_tab(tabId);
-        } catch (error) {
-            console.error("Error processing link:", currentLink, error);
+        let productDetails = null;
+        if (linkType.type === "product_page") {
+            productDetails = await extractProductDetails();
         }
+        await updateLinkDetails(currentLink, productDetails);
 
-        // Implement a delay between processing each link
+        // Extract and process new links from the current link's content
+        const childLinks = await extractLinks(currentLink);
+        childLinks.forEach(link => {
+            if (!visited.has(link)) {
+                queue.push(link);
+            }
+        });
+
+        // Close the tab after processing
+        await close_tab(tabId);
+
+        // Implement a random delay between processing each link
         await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
     }
 
-    console.log("Finished visiting all links");
+    console.log("Finished visiting all links.");
 }
+
 
 // -------------------------------- main ----------------------------------------
 
+injectFlagScript();
 
+// Main script logic
+if (window.myContentScriptInjected) {
+    const rootLinks = ["https://www.mercadolibre.com.co/categorias#menu=categories"];
+    visitor_link_tree_bfs(rootLinks);
+} else {
+    console.log("Script injection.js was already injected");
+}
 
-const rootLinks = ["https://www.mercadolibre.com.co/categorias#menu=categories"];
-visitor_link_tree_bfs(rootLinks);

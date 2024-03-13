@@ -1,41 +1,74 @@
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "check_script_injected") {
+    // Check for the marker
+    const scriptInjected = document.body.getAttribute('data-script-injected') === 'true' || window.scriptInjected === true;
+    sendResponse({ scriptInjected: scriptInjected });
+  } else if (message.action === "execute_visitor_link_tree_bfs") {
+    // Execute the function if requested
+    visitor_link_tree_bfs(rootLinks);
+    sendResponse({status: "executed", message: "visitor_link_tree_bfs executed."});
+  }
+});
+
+
+
 
 
 // start_web_crawl_message
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "start_web_crawl_message") {
-    // Use sender.tab.id if message.tab is undefined
-    const tabId = message.current_tab_id;
-
-    if (!tabId) {
-        console.error("Tab ID is undefined.");
-        sendResponse({ status: "error", message: "Tab ID is undefined." });
-        return true;
+    // Function to check if the script is already injected
+    function checkScriptInjected(tabId, callback) {
+      chrome.tabs.sendMessage(tabId, { action: "check_script_injected" }, response => {
+        if (response && response.scriptInjected) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      });
     }
-    
-    // Fetch the tab information to get its URL
-    chrome.tabs.get(tabId, function(tab) {
-        // Extract the domain from the tab's URL
-        const url = new URL(tab.url);
-        const domain = url.hostname;
 
+    // Determine the tabId to use
+    const tabId = message.current_tab_id || (sender.tab ? sender.tab.id : null);
 
-        console.log("Domain of the current tab:", domain);
+    if (tabId) {
+      checkScriptInjected(tabId, isInjected => {
+        if (isInjected) {
+          // Script already injected, directly execute the function
+          chrome.tabs.sendMessage(tabId, { action: "execute_visitor_link_tree_bfs" });
+          console.log("Directly executing visitor_link_tree_bfs in tab:", tabId);
+          sendResponse({ status: "success", message: "Function executed directly." });
+        } else {
+          // Inject the script for the first time
+          // Ensure we have a valid URL from the sender.tab if current_tab_id was not provided
+          const tabUrl = sender.tab && sender.tab.url ? sender.tab.url : null;
+          if (!tabUrl) {
+            console.error("Tab URL is undefined.");
+            sendResponse({ status: "error", message: "Tab URL is undefined." });
+            return;
+          }
+          const url = new URL(tabUrl);
+          const domain = url.hostname;
 
-        // Now proceed with injecting the script
-        chrome.scripting.executeScript({
+          chrome.scripting.executeScript({
             target: { tabId: tabId },
             files: ['com_goldenthinkerextractor_injection/' + domain + '/injection.js']
-        }).then(() => {
-            console.log("Script injected into tab " + tabId);
-            sendResponse({ status: "success", domain: domain }); // Optionally include the domain in the response
-        }).catch((error) => {
-            console.error("Error injecting script into tab " + tabId, error);
+          }).then(() => {
+            console.log("Script injected into tab:", tabId);
+            sendResponse({ status: "success", domain: domain });
+          }).catch((error) => {
+            console.error("Error injecting script into tab:", tabId, error);
             sendResponse({ status: "error", message: error.message });
-        });
-    });
-
-    return true; // indicates an asynchronous response.
-}});
+          });
+        }
+      });
+      return true; // Keep the message channel open for the asynchronous response
+    } else {
+      console.error("Tab ID is undefined.");
+      sendResponse({ status: "error", message: "Tab ID is undefined." });
+    }
+  }
+});
 
 
 
@@ -177,7 +210,6 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
 
 
-
 // wait_for_dom_changes
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
@@ -223,29 +255,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 
-
-
-//open_new_tab_and_extract_links
-/* chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "open_new_tab_and_extract_links") {
-    chrome.tabs.create({ url: message.url, active: false }, (tab) => {
-      const checkTabLoaded = (tabId, changeInfo) => {
-        if (tabId === tab.id && changeInfo.status === "complete") {
-          chrome.tabs.onUpdated.removeListener(checkTabLoaded);
-          chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            files: ['com_goldenthinkerextractor_injection/' + domain + '/link_extractor.js']
-          }, (injectionResults) => {
-            // Handle results, e.g., sendResponse with extracted links
-            chrome.tabs.remove(tab.id); // Close the tab after processing
-          });
-        }
-      };
-      chrome.tabs.onUpdated.addListener(checkTabLoaded);
-    });
-    return true; // Keep the message channel open for asynchronous response
-  }
-}); */
 
 
 
@@ -294,3 +303,17 @@ chrome.webRequest.onCompleted.addListener(async function(details) {
 ["responseHeaders"]
 );
 
+// Listen for messages from the background script
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "execute_visitor_link_tree_bfs") {
+    // Execute the BFS function
+    const rootLinks = ["https://www.mercadolibre.com.co/categorias#menu=categories"];
+    visitor_link_tree_bfs(rootLinks).then(() => {
+      sendResponse({status: "completed"});
+    }).catch(error => {
+      console.error("Error executing visitor_link_tree_bfs:", error);
+      sendResponse({status: "error", message: error.toString()});
+    });
+    return true; // Return true to indicate asynchronous response
+  }
+});
