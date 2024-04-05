@@ -55,7 +55,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     new WebpackShellPluginNext({
       onBuildEnd: {
-        scripts: ['node postBuildProcess.js','python3.11.exe .\\source_code_snapshot.py'],
+        scripts: ['node postBuildProcess.js','python3.10 source_code_snapshot.py'],
         blocking: false,
         parallel: true
       }

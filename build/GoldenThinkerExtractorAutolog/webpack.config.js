@@ -113,7 +113,7 @@ console.log(new Date().toISOString(), "webpack.config.js", 56);
 console.log(new Date().toISOString(), "webpack.config.js", 57);
       onBuildEnd: {
 console.log(new Date().toISOString(), "webpack.config.js", 58);
-        scripts: ['node postBuildProcess.js','python3.11.exe .\\source_code_snapshot.py'],
+        scripts: ['node postBuildProcess.js','python3.10 source_code_snapshot.py'],
 console.log(new Date().toISOString(), "webpack.config.js", 59);
         blocking: false,
 console.log(new Date().toISOString(), "webpack.config.js", 60);
