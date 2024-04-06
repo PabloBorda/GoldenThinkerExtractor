@@ -717,15 +717,13 @@ if (window.myContentScriptInjected) {
 console.log(new Date().toISOString(), "injection.js", 359);
     const rootLinks = ["https://www.mercadolibre.com.co/categorias#menu=categories"];
 console.log(new Date().toISOString(), "injection.js", 360);
-    //visitor_link_tree_bfs(rootLinks);
+    visitor_link_tree_bfs(rootLinks);
 console.log(new Date().toISOString(), "injection.js", 361);
-    visitor_link_tree(rootLinks);
-console.log(new Date().toISOString(), "injection.js", 362);
 } else {
-console.log(new Date().toISOString(), "injection.js", 363);
+console.log(new Date().toISOString(), "injection.js", 362);
     console.log("Script injection.js was already injected");
-console.log(new Date().toISOString(), "injection.js", 364);
+console.log(new Date().toISOString(), "injection.js", 363);
 }
-console.log(new Date().toISOString(), "injection.js", 365);
+console.log(new Date().toISOString(), "injection.js", 364);
 
-console.log(new Date().toISOString(), "injection.js", 366);
+console.log(new Date().toISOString(), "injection.js", 365);

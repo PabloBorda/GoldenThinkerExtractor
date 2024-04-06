@@ -1,9 +1,12 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "check_script_injected") {
     // Check for the marker
+    console.log("check_script_injected message received ");
     const scriptInjected = document.body.getAttribute('data-script-injected') === 'true' || window.scriptInjected === true;
     sendResponse({ scriptInjected: scriptInjected });
+    console.log("check_script_injected:  " + scriptInjected);
   } else if (message.action === "execute_visitor_link_tree_bfs") {
+    console.log("BFS iteration starts... ")
     // Execute the function if requested
     visitor_link_tree_bfs(rootLinks);
     sendResponse({status: "executed", message: "visitor_link_tree_bfs executed."});
@@ -19,12 +22,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "start_web_crawl_message") {
     // Function to check if the script is already injected
     function checkScriptInjected(tabId, callback) {
-      chrome.tabs.sendMessage(tabId, { action: "check_script_injected" }, response => {
+      chrome.runtime.sendMessage(tabId, { action: "check_script_injected" }, response => {
         if (response && response.scriptInjected) {
           callback(true);
         } else {
           callback(false);
         }
+        return true;
       });
     }
 

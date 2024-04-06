@@ -7,11 +7,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === "check_script_injected") {
     // Check for the marker
+    console.log("check_script_injected message received ");
     var scriptInjected = document.body.getAttribute('data-script-injected') === 'true' || window.scriptInjected === true;
     sendResponse({
       scriptInjected: scriptInjected
     });
+    console.log("check_script_injected:  " + scriptInjected);
   } else if (message.action === "execute_visitor_link_tree_bfs") {
+    console.log("BFS iteration starts... ");
     // Execute the function if requested
     visitor_link_tree_bfs(rootLinks);
     sendResponse({
@@ -26,7 +29,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.action === "start_web_crawl_message") {
     // Function to check if the script is already injected
     var checkScriptInjected = function checkScriptInjected(tabId, callback) {
-      chrome.tabs.sendMessage(tabId, {
+      chrome.runtime.sendMessage(tabId, {
         action: "check_script_injected"
       }, function (response) {
         if (response && response.scriptInjected) {
@@ -34,6 +37,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         } else {
           callback(false);
         }
+        return true;
       });
     }; // Determine the tabId to use
     var tabId = message.current_tab_id || (sender.tab ? sender.tab.id : null);

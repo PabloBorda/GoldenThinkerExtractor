@@ -22,6 +22,7 @@ function attach_event_listeners(){
                 console.error("Script failed to inject:", response.message);
                 // Handle error
             }
+            return true;
         });
     });
   });

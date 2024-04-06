@@ -357,8 +357,7 @@ injectFlagScript();
 // Main script logic
 if (window.myContentScriptInjected) {
     const rootLinks = ["https://www.mercadolibre.com.co/categorias#menu=categories"];
-    //visitor_link_tree_bfs(rootLinks);
-    visitor_link_tree(rootLinks);
+    visitor_link_tree_bfs(rootLinks);
 } else {
     console.log("Script injection.js was already injected");
 }
