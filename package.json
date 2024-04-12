@@ -45,9 +45,11 @@
     "@babel/traverse": "^7.24.1",
     "@babel/types": "^7.24.0",
     "axios": "^1.6.8",
+    "cheerio": "^1.0.0-rc.12",
     "csv-parser": "^3.0.0",
     "csv-writer": "^1.6.0",
     "glob": "^10.3.12",
-    "mkdirp": "^3.0.1"
+    "mkdirp": "^3.0.1",
+    "search-engine-client": "^0.1.0"
   }
 }
